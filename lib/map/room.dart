@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:roguelike_app/libs.dart';
 
 class Room{
@@ -27,14 +29,17 @@ class Room{
   //4 - рундук (сундук для рун)
   //5 - босс
   getInterior(int height, int wight) {
+    dev.log("getting interior", name: "entering func");
     if (type != 0) {
       int center = height ~/ 2;
       var max = Random();
       List<int> hei = [];
       for (int i = 0; i < height; i++) {
+        dev.log(i.toString(), name: "first cycle in func");
         hei.add(0);
       }
       for (int i = 0; i < wight; i++) {
+        dev.log(i.toString(), name: "second cycle in func");
         interior.add(hei);
       }
       List<List<int>> sas = interior;
@@ -46,7 +51,10 @@ class Room{
       } else if (type == 1) {
         interior[wight % 2][height % 2] = 5;
       } else {
+        int k = 0;
         while(mob<5) {
+          k++;
+          dev.log(k.toString(), name: "cycle count of spawning");
           interior=sas;//обнуление комнаты
           for (int i = 0; i < wight; i++) {
             for (int j = 0; j < height; j++) {
