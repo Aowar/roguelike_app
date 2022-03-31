@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:roguelike_app/libs.dart';
+import 'dart:developer' as dev;
 import 'dart:ui';
 
 var playerPozKey = RectGetter.createGlobalKey();
@@ -19,10 +22,12 @@ final List<dynamic> posKeys = [];
 var _size = window.physicalSize;
 var _playerWidth = (_size.width / 30).floorToDouble();
 var _playerHeight = (_size.height / 40).floorToDouble();
+late Room _room;
 
 
 void main() {
-  AppMap(_playerWidth*28 ~/ _playerHeight, _playerHeight*28 ~/ _playerHeight);
+  _room = Room(1, _playerWidth*28 ~/ _playerWidth, _playerHeight*28 ~/ _playerHeight);
+  dev.log(_room.interior.length.toString() + _room.interior[0].length.toString(), name: "Amount of cells");
   runApp(const MyApp());
 }
 
@@ -66,6 +71,14 @@ class _MyHomePageState extends State<MyHomePage> {
     posKeys.add(RectGetter.getRectFromKey(leftLowerWallPozKey)!);
     posKeys.add(RectGetter.getRectFromKey(rightUpperWallPozKey)!);
     posKeys.add(RectGetter.getRectFromKey(rightLowerWallPozKey)!);
+  }
+
+  generateCell(var y, var x) {
+    return ListView(
+      children: [
+
+      ],
+    );
   }
 
   generateWall(BuildContext context, double height, double width, var key, Color color) {
@@ -139,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     width: _playerWidth*30,
                     height: _playerHeight*30,
                     child: Stack(
-                      children: [
+                      children: <Widget>[
                         /// Generate top side
                         Positioned(
                           left: 0,
@@ -199,6 +212,21 @@ class _MyHomePageState extends State<MyHomePage> {
                             ],
                           ),
                         ),
+                        for (int i = 0; i < _room.interior.length; i++)
+                          for (int j = 0; j < _room.interior[i].length; j++)
+                            Positioned(
+                                top: _playerHeight*(i+1),
+                                left: _playerWidth*(j+1),
+                                child: SizedBox(
+                                    width: _playerWidth,
+                                    height: _playerHeight,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: _room.interior[i][j] == 2 ? Colors.red : Colors.black12
+                                      ),
+                                    )
+                                )
+                            ),
                         Positioned(
                           left: posX,
                           top: posY,
