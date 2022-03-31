@@ -22,7 +22,7 @@ var _playerHeight = (_size.height / 40).floorToDouble();
 
 
 void main() {
-  // AppMap((_size.height - _playerSize*2) ~/ _playerSize, (_size.height - _playerSize*2) ~/ _playerSize);
+  // AppMap((_size.height - _playerHeight*2) ~/ _playerHeight, (_size.width - _playerWidth*2) ~/ _playerWidth);
   runApp(const MyApp());
 }
 
@@ -146,11 +146,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Row(
                             children: [
                               ///Generate upper left wall
-                              generateWall(context, _playerHeight, _playerWidth*13, upperLeftWallPozKey, Colors.black),
+                              generateWall(context, _playerHeight, _playerWidth*14, upperLeftWallPozKey, Colors.black),
                               ///Generate upper exit
-                              generateWall(context, _playerHeight, _playerWidth*3, upperExit, Colors.black12),
+                              generateWall(context, _playerHeight, _playerWidth*2, upperExit, Colors.black12),
                               ///Generate upper right wall
-                              generateWall(context, _playerHeight, _playerWidth*13, upperRightWallPozKey, Colors.black),
+                              generateWall(context, _playerHeight, _playerWidth*14, upperRightWallPozKey, Colors.black),
                             ],
                           ),
                         ),
@@ -161,11 +161,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: Row(
                               children: [
                                 ///Generate lower left wall
-                                generateWall(context, _playerHeight, _playerWidth*13, lowerLeftWallPozKey, Colors.black),
+                                generateWall(context, _playerHeight, _playerWidth*14, lowerLeftWallPozKey, Colors.black),
                                 ///Generate lower exit
-                                generateWall(context, _playerHeight, _playerWidth*3, lowerExit, Colors.black12),
+                                generateWall(context, _playerHeight, _playerWidth*2, lowerExit, Colors.black12),
                                 ///Generate lower right wall
-                                generateWall(context, _playerHeight, _playerWidth*13, lowerRightWallPozKey, Colors.black),
+                                generateWall(context, _playerHeight, _playerWidth*14, lowerRightWallPozKey, Colors.black),
                               ],
                             )
                         ),
@@ -176,11 +176,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Column(
                             children: [
                               ///Generate left upper wall
-                              generateWall(context, _playerHeight*13, _playerWidth, leftUpperWallPozKey, Colors.black),
+                              generateWall(context, _playerHeight*14, _playerWidth, leftUpperWallPozKey, Colors.black),
                               ///Generate left exit
-                              generateWall(context, _playerHeight*3, _playerWidth, leftExit, Colors.black12),
+                              generateWall(context, _playerHeight*2, _playerWidth, leftExit, Colors.black12),
                               ///Generate left lower wall
-                              generateWall(context, _playerHeight*13, _playerWidth, leftLowerWallPozKey, Colors.black),
+                              generateWall(context, _playerHeight*14, _playerWidth, leftLowerWallPozKey, Colors.black),
                             ],
                           ),
                         ),
@@ -191,9 +191,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Column(
                             children: [
                               ///Generate right upper wall
-                              generateWall(context, _playerHeight*13, _playerWidth, rightUpperWallPozKey, Colors.black),
+                              generateWall(context, _playerHeight*14, _playerWidth, rightUpperWallPozKey, Colors.black),
                               ///Generate left exit
-                              generateWall(context, _playerHeight*3, _playerWidth, rightExit, Colors.black12),
+                              generateWall(context, _playerHeight*2, _playerWidth, rightExit, Colors.black12),
                               ///Generate right lower wall
                               generateWall(context, _playerHeight*14, _playerWidth, rightLowerWallPozKey, Colors.black),
                             ],
