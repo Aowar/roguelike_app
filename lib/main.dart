@@ -22,7 +22,7 @@ var _playerHeight = (_size.height / 40).floorToDouble();
 
 
 void main() {
-  // AppMap(_playerWidth*28 ~/ _playerHeight, _playerHeight*28 ~/ _playerHeight);
+  AppMap(_playerWidth*28 ~/ _playerHeight, _playerHeight*28 ~/ _playerHeight);
   runApp(const MyApp());
 }
 
