@@ -17,7 +17,9 @@ var leftExit = RectGetter.createGlobalKey();
 
 final List<dynamic> posKeys = [];
 var _size = window.physicalSize;
-var _playerSize = (_size.width / 22).floorToDouble();
+var _playerWidth = (_size.width / 30).floorToDouble();
+var _playerHeight = (_size.height / 40).floorToDouble();
+
 
 void main() {
   // AppMap((_size.height - _playerSize*2) ~/ _playerSize, (_size.height - _playerSize*2) ~/ _playerSize);
@@ -50,7 +52,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   late Rect playerPoz;
-  final double _step = _playerSize;
+  final double _stepY = _playerHeight;
+  final double _stepX = _playerWidth;
 
   gettingCoordinates() {
     playerPoz = RectGetter.getRectFromKey(playerPozKey)!;
@@ -84,9 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
   goUpward() {
     setState(() {
       gettingCoordinates();
-      Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top - _step, playerPoz.right, playerPoz.bottom);
+      Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top - _stepY, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element))) {
-        posY = posY - _step;
+        posY = posY - _stepY;
       }
     });
   }
@@ -94,9 +97,9 @@ class _MyHomePageState extends State<MyHomePage> {
   goDownward() {
     setState(() {
       gettingCoordinates();
-      Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right, playerPoz.bottom + _step);
+      Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right, playerPoz.bottom + _stepY);
       if (!posKeys.any((element) => nextPos.overlaps(element))) {
-        posY = posY + _step;
+        posY = posY + _stepY;
       }
     });
   }
@@ -104,9 +107,9 @@ class _MyHomePageState extends State<MyHomePage> {
   goLeft() {
     setState(() {
       gettingCoordinates();
-      Rect nextPos = Rect.fromLTRB(playerPoz.left - _step, playerPoz.top, playerPoz.right, playerPoz.bottom);
+      Rect nextPos = Rect.fromLTRB(playerPoz.left - _stepX, playerPoz.top, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element))) {
-        posX = posX - _step;
+        posX = posX - _stepX;
       }
     });
   }
@@ -114,103 +117,113 @@ class _MyHomePageState extends State<MyHomePage> {
   goRight() {
     setState(() {
       gettingCoordinates();
-      Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right + _step, playerPoz.bottom);
+      Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right + _stepX, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element))) {
-        posX = posX + _step;
+        posX = posX + _stepX;
       }
     });
   }
 
-  double posX = _playerSize*3;
-  double posY = _playerSize*3;
+  double posX = _playerWidth*3;
+  double posY = _playerHeight*3;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-              Center(
-                child: Container(
-                    color: Colors.black12,
-                    child: SizedBox(
-                        width: _playerSize*20,
-                        height: _playerSize*20,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              left: 0,
-                              child: Row(
-                                children: [
-                                  //Generate upper left wall
-                                  generateWall(context, _playerSize, _playerSize*9, upperLeftWallPozKey, Colors.black),
-                                  //Generate upper left wall
-                                  generateWall(context, _playerSize, _playerSize*3, upperExit, Colors.black12),
-                                  //Generate upper right wall
-                                  generateWall(context, _playerSize, _playerSize*9, upperRightWallPozKey, Colors.black),
-                                ],
-                              ),
+          SizedBox(
+              child: Container(
+                  color: Colors.black12,
+                  child: SizedBox(
+                    width: _playerWidth*30,
+                    height: _playerHeight*30,
+                    child: Stack(
+                      children: [
+                        /// Generate top side
+                        Positioned(
+                          left: 0,
+                          child: Row(
+                            children: [
+                              ///Generate upper left wall
+                              generateWall(context, _playerHeight, _playerWidth*13, upperLeftWallPozKey, Colors.black),
+                              ///Generate upper exit
+                              generateWall(context, _playerHeight, _playerWidth*3, upperExit, Colors.black12),
+                              ///Generate upper right wall
+                              generateWall(context, _playerHeight, _playerWidth*13, upperRightWallPozKey, Colors.black),
+                            ],
+                          ),
+                        ),
+                        /// Generate bottom side
+                        Positioned(
+                            bottom: 0,
+                            left: 0,
+                            child: Row(
+                              children: [
+                                ///Generate lower left wall
+                                generateWall(context, _playerHeight, _playerWidth*13, lowerLeftWallPozKey, Colors.black),
+                                ///Generate lower exit
+                                generateWall(context, _playerHeight, _playerWidth*3, lowerExit, Colors.black12),
+                                ///Generate lower right wall
+                                generateWall(context, _playerHeight, _playerWidth*13, lowerRightWallPozKey, Colors.black),
+                              ],
+                            )
+                        ),
+                        /// Generate left side
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          child: Column(
+                            children: [
+                              ///Generate left upper wall
+                              generateWall(context, _playerHeight*13, _playerWidth, leftUpperWallPozKey, Colors.black),
+                              ///Generate left exit
+                              generateWall(context, _playerHeight*3, _playerWidth, leftExit, Colors.black12),
+                              ///Generate left lower wall
+                              generateWall(context, _playerHeight*13, _playerWidth, leftLowerWallPozKey, Colors.black),
+                            ],
+                          ),
+                        ),
+                        /// Generate right side
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Column(
+                            children: [
+                              ///Generate right upper wall
+                              generateWall(context, _playerHeight*13, _playerWidth, rightUpperWallPozKey, Colors.black),
+                              ///Generate left exit
+                              generateWall(context, _playerHeight*3, _playerWidth, rightExit, Colors.black12),
+                              ///Generate right lower wall
+                              generateWall(context, _playerHeight*14, _playerWidth, rightLowerWallPozKey, Colors.black),
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          left: posX,
+                          top: posY,
+                          child: SizedBox(
+                            width: _playerWidth,
+                            height: _playerHeight,
+                            child: RectGetter(
+                                key: playerPozKey,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    RectGetter.getRectFromKey(playerPozKey);
+                                    RectGetter.getRectFromKey(upperLeftWallPozKey);
+                                  },
+                                  child: Container(
+                                    color: Colors.green,
+                                  ),
+                                )
                             ),
-                            //Generate lower left wall
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              child: generateWall(context, _playerSize, _playerSize*6, lowerLeftWallPozKey, Colors.black),
-                            ),
-                            //Generate lower right wall
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: generateWall(context, _playerSize, _playerSize*6, lowerRightWallPozKey, Colors.black),
-                            ),
-                            //Generate left upper wall
-                            Positioned(
-                              top: 0,
-                              left: 0,
-                              child: generateWall(context, _playerSize*12, _playerSize, leftUpperWallPozKey, Colors.black),
-                            ),
-                            //Generate left lower wall
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              child: generateWall(context, _playerSize*12, _playerSize, leftLowerWallPozKey, Colors.black),
-                            ),
-                            //Generate right upper wall
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: generateWall(context, _playerSize*12, _playerSize, rightUpperWallPozKey, Colors.black),
-                            ),
-                            //Generate right lower wall
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: generateWall(context, _playerSize*12, _playerSize, rightLowerWallPozKey, Colors.black),
-                            ),
-                            Positioned(
-                              left: posX,
-                              top: posY,
-                              child: SizedBox(
-                                width: _playerSize,
-                                height: _playerSize,
-                                child: RectGetter(
-                                    key: playerPozKey,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        RectGetter.getRectFromKey(playerPozKey);
-                                        RectGetter.getRectFromKey(upperLeftWallPozKey);
-                                      },
-                                      child: Container(
-                                        color: Colors.green,
-                                      ),
-                                    )
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                    )
-                ),
-              ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+              )
+          ),
           Center(
               child: Padding(
                 padding: EdgeInsets.only(top: 20),
