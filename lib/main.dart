@@ -1,8 +1,9 @@
 import 'dart:developer';
+import 'dart:html';
 
 import 'package:roguelike_app/libs.dart';
 import 'dart:developer' as dev;
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 var playerPozKey = RectGetter.createGlobalKey();
 var upperLeftWallPozKey = RectGetter.createGlobalKey();
@@ -17,9 +18,12 @@ var upperExit = RectGetter.createGlobalKey();
 var lowerExit = RectGetter.createGlobalKey();
 var rightExit = RectGetter.createGlobalKey();
 var leftExit = RectGetter.createGlobalKey();
+bool flag = false;
+dynamic enemyKey;
+List<dynamic> enemyKeys = [];
 
 final List<dynamic> posKeys = [];
-var _size = window.physicalSize;
+var _size = ui.window.physicalSize;
 var _playerWidth = (_size.width / 30).floorToDouble();
 var _playerHeight = (_size.height / 40).floorToDouble();
 late Room _room;
@@ -71,14 +75,6 @@ class _MyHomePageState extends State<MyHomePage> {
     posKeys.add(RectGetter.getRectFromKey(leftLowerWallPozKey)!);
     posKeys.add(RectGetter.getRectFromKey(rightUpperWallPozKey)!);
     posKeys.add(RectGetter.getRectFromKey(rightLowerWallPozKey)!);
-  }
-
-  generateCell(var y, var x) {
-    return ListView(
-      children: [
-
-      ],
-    );
   }
 
   generateWall(BuildContext context, double height, double width, var key, Color color) {
@@ -135,6 +131,35 @@ class _MyHomePageState extends State<MyHomePage> {
         posX = posX + _stepX;
       }
     });
+  }
+
+  Widget scanningCells(int i, int j) {
+    if(flag) {
+      enemyKeys.add(RectGetter.getRectFromKey(enemyKey)!);
+    }
+    if (_room.interior[i].elementAt(j) == 2){
+      return gettingEnemyPos(i, j);
+    } else {
+      return Container(
+      decoration: const BoxDecoration(
+          color: Colors.black12
+      ),
+    );
+    }
+  }
+
+  Widget gettingEnemyPos(int i, int j) {
+    flag = true;
+    dev.log("Getting enemy coordinates");
+    dev.log("Getting enemy coordinates");
+    return RectGetter(
+        key: enemyKey = RectGetter.createGlobalKey(),
+        child: Container(
+          decoration: const BoxDecoration(
+              color: Colors.red
+          ),
+        )
+    );
   }
 
   double posX = _playerWidth*3;
@@ -220,11 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: SizedBox(
                                     width: _playerWidth,
                                     height: _playerHeight,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: _room.interior[i][j] == 2 ? Colors.red : Colors.black12
-                                      ),
-                                    )
+                                    child: scanningCells(i, j)
                                 )
                             ),
                         Positioned(
