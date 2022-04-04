@@ -90,8 +90,11 @@ class _MyHomePageState extends State<MyHomePage> {
   gettingEnemyCoordinates() {
     enemyPos.clear();
     for(int i = 0; i < enemyKeys.length; i++) {
-      enemyPos.add(RectGetter.getRectFromKey(enemyKeys[i]));
+      if (RectGetter.getRectFromKey(enemyKeys[i]) != null){
+        enemyPos.add(RectGetter.getRectFromKey(enemyKeys[i]));
+      }
     }
+    enemyKeys.clear();
   }
 
   generateWall(BuildContext context, double height, double width, var key, Color color) {
@@ -115,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
       gettingCoordinates();
       gettingEnemyCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top - _stepY, playerPoz.right, playerPoz.bottom);
-      if (!posKeys.any((element) => nextPos.overlaps(element))) {
+      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element))) {
         posY = posY - _stepY;
       }
       dev.log(enemyPos.toString(), name: "Enemy pos");
@@ -125,8 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
   goDownward() {
     setState(() {
       gettingCoordinates();
+      gettingEnemyCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right, playerPoz.bottom + _stepY);
-      if (!posKeys.any((element) => nextPos.overlaps(element))) {
+      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element))) {
         posY = posY + _stepY;
       }
     });
@@ -135,8 +139,9 @@ class _MyHomePageState extends State<MyHomePage> {
   goLeft() {
     setState(() {
       gettingCoordinates();
+      gettingEnemyCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left - _stepX, playerPoz.top, playerPoz.right, playerPoz.bottom);
-      if (!posKeys.any((element) => nextPos.overlaps(element))) {
+      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element))) {
         posX = posX - _stepX;
       }
     });
@@ -145,8 +150,9 @@ class _MyHomePageState extends State<MyHomePage> {
   goRight() {
     setState(() {
       gettingCoordinates();
+      gettingEnemyCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right + _stepX, playerPoz.bottom);
-      if (!posKeys.any((element) => nextPos.overlaps(element))) {
+      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element))) {
         posX = posX + _stepX;
       }
     });
@@ -166,10 +172,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
     enemyKeys.add(_enemyKey);
     return rectGetter;
-  }
-
-  getEnemyKeysLog(){
-    dev.log(enemyKeys.toString(), name: "Enemy keys");
   }
 
   double posX = _playerWidth*3;
