@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:html';
 
 import 'package:roguelike_app/libs.dart';
 import 'dart:developer' as dev;
@@ -23,29 +22,37 @@ dynamic enemyKey;
 List<dynamic> enemyKeys = [];
 
 final List<dynamic> posKeys = [];
-var _size = ui.window.physicalSize;
-var _playerWidth = (_size.width / 30).floorToDouble();
-var _playerHeight = (_size.height / 40).floorToDouble();
+var _playerWidth;
+var _playerHeight;
 late Room _room;
 
 
 void main() {
-  _room = Room(1, _playerWidth*28 ~/ _playerWidth, _playerHeight*28 ~/ _playerHeight);
-  dev.log(_room.interior.length.toString() + _room.interior[0].length.toString(), name: "Amount of cells");
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: _MyHomePage(),
     );
+  }
+}
+
+class _MyHomePage extends StatelessWidget {
+  const _MyHomePage();
+
+  @override
+  Widget build(BuildContext context) {
+    _playerWidth = (MediaQuery.of(context).size.width / 30).floorToDouble();
+    _playerHeight = (MediaQuery.of(context).size.height / 45).floorToDouble();
+    _room = Room(1, _playerWidth*28 ~/ _playerWidth, _playerHeight*28 ~/ _playerHeight);
+    return const MyHomePage(title: "fds");
   }
 }
 
@@ -133,34 +140,35 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Widget scanningCells(int i, int j) {
-    if(flag) {
-      enemyKeys.add(RectGetter.getRectFromKey(enemyKey)!);
-    }
-    if (_room.interior[i].elementAt(j) == 2){
-      return gettingEnemyPos(i, j);
-    } else {
-      return Container(
-      decoration: const BoxDecoration(
-          color: Colors.black12
-      ),
-    );
-    }
-  }
-
-  Widget gettingEnemyPos(int i, int j) {
-    flag = true;
-    dev.log("Getting enemy coordinates");
-    dev.log("Getting enemy coordinates");
-    return RectGetter(
-        key: enemyKey = RectGetter.createGlobalKey(),
-        child: Container(
-          decoration: const BoxDecoration(
-              color: Colors.red
-          ),
-        )
-    );
-  }
+  // Widget scanningCells(int i, int j) {
+  //   if(flag) {
+  //     dev.log(enemyKey.toString(), name: "Enemy key");
+  //     enemyKeys.add(RectGetter.getRectFromKey(enemyKey)!);
+  //   }
+  //   if (_room.interior[i].elementAt(j) == 2){
+  //     return gettingEnemyPos(i, j);
+  //   } else {
+  //     return Container(
+  //     decoration: const BoxDecoration(
+  //         color: Colors.black12
+  //     ),
+  //   );
+  //   }
+  // }
+  //
+  // Widget gettingEnemyPos(int i, int j) {
+  //   flag = true;
+  //   dev.log("Getting enemy coordinates");
+  //   dev.log("Getting enemy coordinates");
+  //   return RectGetter(
+  //       key: enemyKey = RectGetter.createGlobalKey(),
+  //       child: Container(
+  //         decoration: const BoxDecoration(
+  //             color: Colors.red
+  //         ),
+  //       )
+  //   );
+  // }
 
   double posX = _playerWidth*3;
   double posY = _playerHeight*3;
@@ -245,7 +253,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: SizedBox(
                                     width: _playerWidth,
                                     height: _playerHeight,
-                                    child: scanningCells(i, j)
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.white),
+                                        color: _room.interior[i][j] == 2 ? Colors.red : Colors.amber
+                                      ),
+                                    )
                                 )
                             ),
                         Positioned(
