@@ -1,5 +1,6 @@
-import 'package:roguelike_app/libs.dart';
 import 'dart:developer' as dev;
+
+import 'package:roguelike_app/libs.dart';
 
 class Room{
   int type = -1;
@@ -32,15 +33,10 @@ class Room{
     if (type != 0) {
       int center = height ~/ 2;
       var max = Random();
-      List<int> hei = [];
-      for (int i = 0; i < height; i++) {
-        hei.add(0);
-      }
       for (int i = 0; i < wight; i++) {
-        interior.add(hei);
+        interior.add(List.filled(height, 0));
       }
-      List<List<int>> sas = interior;
-      //закидываю массив 0
+
       if(type == 4){
         interior[wight % 2][height % 2] = 4;
       } else if (type == 3) {
@@ -48,6 +44,7 @@ class Room{
       } else if (type == 1) {
         interior[wight % 2][height % 2] = 5;
       } else {
+        int k = 0;
         while(mob<5) {
           mob=0;
           for (int i = 0; i < wight; i++) {
@@ -69,6 +66,9 @@ class Room{
                 }
               }
             }
+            print(interior[i] );
+            print("\n");
+
           }
         }
         interior[0][center - 1] = 0;
@@ -80,6 +80,7 @@ class Room{
       }
 
     }
+    print("конец");
   }
 
   getNearby(int i, j, maxI, maxJ){
@@ -91,25 +92,26 @@ class Room{
     }
   }
 
+  //принимает координаты плеера и монстра
   search(int iP,jP,iM,jM) {
-    if ((iP - iM).abs() <= 2 && (jP - jM).abs() <= 2) {
+    if ((iP - iM).abs() <= 2 && (jP - jM).abs() <= 2) { //пора атаковать если в растоянии 2 блуков враг
       attack();
     } else {
-      if (iM - iP > 2 && interior[iM - 1][jM] != 1 && interior.length!=iM) {
-        interior[iM - 1][jM] = 2;
-        interior[iM][jM] = 0; //функцию перемещения монста надо
+      if (iM - iP > 2 && interior[iM - 1][jM] != 1 && interior.length!=iM) { //проверка куда бвигаться, свободен ли путь и мы не на краю карты (если бахнем стенки на границе помнаты можно 3 улсловие убрать)
+        interior[iM - 1][jM] = 2; //сдвиг
+        interior[iM][jM] = 0; //обнуление
       }
-      else if (iM - iP < 2 && interior[iM + 1][jM] != 1 && iM!=0) {
+      else if (iM - iP < 2 && interior[iM + 1][jM] != 1 && iM!=0) { //по аналогии
         interior[iM + 1][jM] = 2;
-        interior[iM][jM] = 0; //функцию перемещения монста надо
+        interior[iM][jM] = 0;
       }
-      if (jM - jP > 2 && interior[iM][jM - 1] != 1 && interior[0].length!=jM) {
+      if (jM - jP > 2 && interior[iM][jM - 1] != 1 && interior[0].length!=jM) {//по аналогии
         interior[iM][jM - 1] = 2;
-        interior[iM][jM] = 0; //функцию перемещения монста надо
+        interior[iM][jM] = 0;
       }
-      else if (jM - jP < 2 && interior[iM][jM + 1] != 1 && jM!=0) {
+      else if (jM - jP < 2 && interior[iM][jM + 1] != 1 && jM!=0) {//по аналогии
         interior[iM][jM + 1] = 2;
-        interior[iM][jM] = 0; //функцию перемещения монста надо
+        interior[iM][jM] = 0;
       }
     }
   }

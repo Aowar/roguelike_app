@@ -24,6 +24,10 @@ List<dynamic> enemyKeys = [];
 final List<dynamic> posKeys = [];
 var _playerWidth;
 var _playerHeight;
+double _fullFieldWidth = _playerWidth*18;
+double _fullFieldHeight = _playerHeight*18;
+double _fieldWidth = _playerWidth*16;
+double _fieldHeight = _playerHeight*16;
 late Room _room;
 
 
@@ -49,9 +53,9 @@ class _MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _playerWidth = (MediaQuery.of(context).size.width / 30).floorToDouble();
-    _playerHeight = (MediaQuery.of(context).size.height / 45).floorToDouble();
-    _room = Room(1, _playerWidth*28 ~/ _playerWidth, _playerHeight*28 ~/ _playerHeight);
+    _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
+    _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
+    _room = Room(1, _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
     return const MyHomePage(title: "fds");
   }
 }
@@ -140,12 +144,30 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  spawnEnemy() {
+    var _enemyKey = RectGetter.createGlobalKey();
+    return SizedBox(
+      width: _playerWidth,
+      height: _playerHeight,
+      child: RectGetter(
+          key: _enemyKey,
+          child: GestureDetector(
+            onTap: () {
+              RectGetter.getRectFromKey(_enemyKey);
+            },
+            child: Container(
+              color: Colors.red,
+            ),
+          )
+      ),
+    );
+  }
+
   // Widget scanningCells(int i, int j) {
   //   if(flag) {
-  //     dev.log(enemyKey.toString(), name: "Enemy key");
-  //     enemyKeys.add(RectGetter.getRectFromKey(enemyKey)!);
+  //     enemyKeys.add(RectGetter.getRectFromKey(enemyKey));
   //   }
-  //   if (_room.interior[i].elementAt(j) == 2){
+  //   if (_room.interior[i][j] == 2){
   //     return gettingEnemyPos(i, j);
   //   } else {
   //     return Container(
@@ -158,8 +180,6 @@ class _MyHomePageState extends State<MyHomePage> {
   //
   // Widget gettingEnemyPos(int i, int j) {
   //   flag = true;
-  //   dev.log("Getting enemy coordinates");
-  //   dev.log("Getting enemy coordinates");
   //   return RectGetter(
   //       key: enemyKey = RectGetter.createGlobalKey(),
   //       child: Container(
@@ -170,8 +190,14 @@ class _MyHomePageState extends State<MyHomePage> {
   //   );
   // }
 
+  getEnemyKeysLog(){
+    dev.log(enemyKeys.toString(), name: "Enemy keys");
+  }
+
   double posX = _playerWidth*3;
   double posY = _playerHeight*3;
+  double horizontalWallsLength = _playerWidth*8;
+  double verticalWallsLength = _playerHeight*8;
 
   @override
   Widget build(BuildContext context) {
@@ -182,8 +208,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                   color: Colors.black12,
                   child: SizedBox(
-                    width: _playerWidth*30,
-                    height: _playerHeight*30,
+                    width: _fullFieldWidth,
+                    height: _fullFieldHeight,
                     child: Stack(
                       children: <Widget>[
                         /// Generate top side
@@ -192,11 +218,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Row(
                             children: [
                               ///Generate upper left wall
-                              generateWall(context, _playerHeight, _playerWidth*13, upperLeftWallPozKey, Colors.black),
+                              generateWall(context, _playerHeight, horizontalWallsLength, upperLeftWallPozKey, Colors.black),
                               ///Generate upper exit
-                              generateWall(context, _playerHeight, _playerWidth*3, upperExit, Colors.black12),
+                              generateWall(context, _playerHeight, _playerWidth*2, upperExit, Colors.black12),
                               ///Generate upper right wall
-                              generateWall(context, _playerHeight, _playerWidth*13, upperRightWallPozKey, Colors.black),
+                              generateWall(context, _playerHeight, horizontalWallsLength, upperRightWallPozKey, Colors.black),
                             ],
                           ),
                         ),
@@ -207,11 +233,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: Row(
                               children: [
                                 ///Generate lower left wall
-                                generateWall(context, _playerHeight, _playerWidth*13, lowerLeftWallPozKey, Colors.black),
+                                generateWall(context, _playerHeight, horizontalWallsLength, lowerLeftWallPozKey, Colors.black),
                                 ///Generate lower exit
-                                generateWall(context, _playerHeight, _playerWidth*3, lowerExit, Colors.black12),
+                                generateWall(context, _playerHeight, _playerWidth*2, lowerExit, Colors.black12),
                                 ///Generate lower right wall
-                                generateWall(context, _playerHeight, _playerWidth*13, lowerRightWallPozKey, Colors.black),
+                                generateWall(context, _playerHeight, horizontalWallsLength, lowerRightWallPozKey, Colors.black),
                               ],
                             )
                         ),
@@ -222,11 +248,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Column(
                             children: [
                               ///Generate left upper wall
-                              generateWall(context, _playerHeight*13, _playerWidth, leftUpperWallPozKey, Colors.black),
+                              generateWall(context, verticalWallsLength, _playerWidth, leftUpperWallPozKey, Colors.black),
                               ///Generate left exit
-                              generateWall(context, _playerHeight*3, _playerWidth, leftExit, Colors.black12),
+                              generateWall(context, _playerHeight*2, _playerWidth, leftExit, Colors.black12),
                               ///Generate left lower wall
-                              generateWall(context, _playerHeight*13, _playerWidth, leftLowerWallPozKey, Colors.black),
+                              generateWall(context, verticalWallsLength, _playerWidth, leftLowerWallPozKey, Colors.black),
                             ],
                           ),
                         ),
@@ -237,11 +263,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: Column(
                             children: [
                               ///Generate right upper wall
-                              generateWall(context, _playerHeight*13, _playerWidth, rightUpperWallPozKey, Colors.black),
+                              generateWall(context, verticalWallsLength, _playerWidth, rightUpperWallPozKey, Colors.black),
                               ///Generate left exit
-                              generateWall(context, _playerHeight*3, _playerWidth, rightExit, Colors.black12),
+                              generateWall(context, _playerHeight*2, _playerWidth, rightExit, Colors.black12),
                               ///Generate right lower wall
-                              generateWall(context, _playerHeight*14, _playerWidth, rightLowerWallPozKey, Colors.black),
+                              generateWall(context, verticalWallsLength, _playerWidth, rightLowerWallPozKey, Colors.black),
                             ],
                           ),
                         ),
@@ -253,14 +279,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: SizedBox(
                                     width: _playerWidth,
                                     height: _playerHeight,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.white),
-                                        color: _room.interior[i][j] == 2 ? Colors.red : Colors.amber
-                                      ),
-                                    )
+                                    child: _room.interior[i][j] == 2 ? spawnEnemy() : Container(),
+                                    // child: Container(
+                                    //   decoration: BoxDecoration(
+                                    //     border: Border.all(color: Colors.white),
+                                    //     color: _room.interior[i][j] == 2 ? Colors.red : Colors.amber
+                                    //   ),
+                                    // )
                                 )
                             ),
+                        getEnemyKeysLog(),
                         Positioned(
                           left: posX,
                           top: posY,
