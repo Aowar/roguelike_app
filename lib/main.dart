@@ -1,3 +1,4 @@
+import 'package:roguelike_app/entity.dart';
 import 'package:roguelike_app/libs.dart';
 import 'dart:developer' as dev;
 import 'dart:ui' as ui;
@@ -55,6 +56,7 @@ class _MyHomePage extends StatelessWidget {
     _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
     _room = Room(1, _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+
     return const MyHomePage(title: "fds");
   }
 }
@@ -121,7 +123,6 @@ class _MyHomePageState extends State<MyHomePage> {
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element))) {
         posY = posY - _stepY;
       }
-      dev.log(enemyPos.toString(), name: "Enemy pos");
     });
   }
 
