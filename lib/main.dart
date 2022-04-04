@@ -1,4 +1,4 @@
-import 'package:roguelike_app/entity.dart';
+import 'package:roguelike_app/bobject.dart';
 import 'package:roguelike_app/libs.dart';
 import 'dart:developer' as dev;
 import 'dart:ui' as ui;
