@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:roguelike_app/libs.dart';
 import 'dart:developer' as dev;
 import 'dart:ui' as ui;
@@ -20,6 +18,7 @@ var leftExit = RectGetter.createGlobalKey();
 bool flag = false;
 dynamic enemyKey;
 List<dynamic> enemyKeys = [];
+List<dynamic> enemyPos = [];
 
 final List<dynamic> posKeys = [];
 var _playerWidth;
@@ -88,6 +87,13 @@ class _MyHomePageState extends State<MyHomePage> {
     posKeys.add(RectGetter.getRectFromKey(rightLowerWallPozKey)!);
   }
 
+  gettingEnemyCoordinates() {
+    enemyPos.clear();
+    for(int i = 0; i < enemyKeys.length; i++) {
+      enemyPos.add(RectGetter.getRectFromKey(enemyKeys[i]));
+    }
+  }
+
   generateWall(BuildContext context, double height, double width, var key, Color color) {
     return SizedBox(
         width: width,
@@ -107,10 +113,12 @@ class _MyHomePageState extends State<MyHomePage> {
   goUpward() {
     setState(() {
       gettingCoordinates();
+      gettingEnemyCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top - _stepY, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element))) {
         posY = posY - _stepY;
       }
+      dev.log(enemyPos.toString(), name: "Enemy pos");
     });
   }
 
@@ -146,49 +154,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   spawnEnemy() {
     var _enemyKey = RectGetter.createGlobalKey();
-    return SizedBox(
-      width: _playerWidth,
-      height: _playerHeight,
-      child: RectGetter(
-          key: _enemyKey,
-          child: GestureDetector(
-            onTap: () {
-              RectGetter.getRectFromKey(_enemyKey);
-            },
-            child: Container(
-              color: Colors.red,
-            ),
-          )
-      ),
+    var rectGetter = RectGetter(
+        key: _enemyKey,
+        child: SizedBox(
+          width: _playerWidth,
+          height: _playerHeight,
+          child: Container(
+            color: Colors.red,
+          ),
+        )
     );
+    enemyKeys.add(_enemyKey);
+    return rectGetter;
   }
-
-  // Widget scanningCells(int i, int j) {
-  //   if(flag) {
-  //     enemyKeys.add(RectGetter.getRectFromKey(enemyKey));
-  //   }
-  //   if (_room.interior[i][j] == 2){
-  //     return gettingEnemyPos(i, j);
-  //   } else {
-  //     return Container(
-  //     decoration: const BoxDecoration(
-  //         color: Colors.black12
-  //     ),
-  //   );
-  //   }
-  // }
-  //
-  // Widget gettingEnemyPos(int i, int j) {
-  //   flag = true;
-  //   return RectGetter(
-  //       key: enemyKey = RectGetter.createGlobalKey(),
-  //       child: Container(
-  //         decoration: const BoxDecoration(
-  //             color: Colors.red
-  //         ),
-  //       )
-  //   );
-  // }
 
   getEnemyKeysLog(){
     dev.log(enemyKeys.toString(), name: "Enemy keys");
@@ -288,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     // )
                                 )
                             ),
-                        getEnemyKeysLog(),
+                        // getEnemyKeysLog(),
                         Positioned(
                           left: posX,
                           top: posY,

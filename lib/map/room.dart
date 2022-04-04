@@ -66,9 +66,6 @@ class Room{
                 }
               }
             }
-            print(interior[i] );
-            print("\n");
-
           }
         }
         interior[0][center - 1] = 0;
@@ -80,7 +77,6 @@ class Room{
       }
 
     }
-    print("конец");
   }
 
   getNearby(int i, j, maxI, maxJ){
