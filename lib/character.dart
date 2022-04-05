@@ -44,4 +44,13 @@ class Char extends Bobject{
   void SetHP(int hp) {
     this.hp = hp;
   }
+
+  bool CheckHP(Char char) {
+    if (char.hp <= 0) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
 }

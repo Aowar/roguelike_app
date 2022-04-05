@@ -2,11 +2,17 @@ import 'dart:developer' as dev;
 
 import 'package:roguelike_app/libs.dart';
 
+import 'package:roguelike_app/chest.dart';
+import 'package:roguelike_app/character.dart';
+import 'package:roguelike_app/hero.dart';
+import 'package:roguelike_app/bobject.dart';
+import 'package:roguelike_app/armor.dart';
+
 class Room{
   int type = -1;
   int tp=-1;
   int mob=0;
-  List<List<int>> interior = [];
+  List<List<dynamic>> interior = [];
 
   Room(type, int height, int wight){
     if(type<=75){
@@ -38,12 +44,15 @@ class Room{
       }
 
       if(type == 4){
-        interior[wight % 2][height % 2] = 4;
-      } else if (type == 3) {
-        interior[wight % 2][height % 2] = 3;
-      } else if (type == 1) {
-        interior[wight % 2][height % 2] = 5;
-      } else {
+        interior[wight % 2][height % 2] = new Chest(wight % 2, height % 2);
+      }
+      // else if (type == 3) {
+      //   interior[wight % 2][height % 2] = new Char(level, atk, def, hp, x, y);
+      // }
+      // else if (type == 1) {
+      //   interior[wight % 2][height % 2] = 5;
+      // }
+      else {
         int k = 0;
         while(mob<5) {
           mob=0;
@@ -55,13 +64,24 @@ class Room{
           for (int i = 0; i < wight; i++) {
             for (int j = 0; j < height; j++) {
               if (getNearby(i, j, interior.length-1, interior[0].length-1)) {
-                interior[i][j] = max.nextInt(3);
+                switch(max.nextInt(3)){
+                  case 0:
+                    interior[i][j] = 0;
+                    break;
+                  case 1:
+                    interior[i][j] = 1;
+                    break;
+                  case 2:
+                    interior[i][j] = Char(1, 1, 1, 10, i, j);
+                    break;
+                }
+
                 if(interior[i][j]==1 && (i+j)%2==0){
                   interior[i+1][j+1]=1;
                   interior[i+1][j]=1;
                   interior[i][j+1]=1;//стенки 4 блока
                 }
-                if (interior[i][j] == 2) {
+                if (interior[i][j] is Char) {
                   mob++; // считаем крипов в комнате
                 }
               }
@@ -75,7 +95,6 @@ class Room{
         interior[interior.length - 1][center] = 0;
         interior[interior.length - 1][center + 1] = 0;
       }
-
     }
   }
 

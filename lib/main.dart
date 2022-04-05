@@ -3,6 +3,8 @@ import 'package:roguelike_app/libs.dart';
 import 'dart:developer' as dev;
 import 'dart:ui' as ui;
 
+import 'character.dart';
+
 var playerPozKey = RectGetter.createGlobalKey();
 var upperLeftWallPozKey = RectGetter.createGlobalKey();
 var upperRightWallPozKey = RectGetter.createGlobalKey();
@@ -258,15 +260,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 top: _playerHeight*(i+1),
                                 left: _playerWidth*(j+1),
                                 child: SizedBox(
-                                    width: _playerWidth,
-                                    height: _playerHeight,
-                                    child: _room.interior[i][j] == 2 ? spawnEnemy() : Container(),
-                                    // child: Container(
-                                    //   decoration: BoxDecoration(
-                                    //     border: Border.all(color: Colors.white),
-                                    //     color: _room.interior[i][j] == 2 ? Colors.red : Colors.amber
-                                    //   ),
-                                    // )
+                                  width: _playerWidth,
+                                  height: _playerHeight,
+                                  child: _room.interior[i][j] is Char ? spawnEnemy() : (_room.interior[i][j] == 0 ? Container() : (_room.interior[i][j] == 1 ? Container(color: Colors.black) : Container(color: Colors.amber))),
                                 )
                             ),
                         // getEnemyKeysLog(),
