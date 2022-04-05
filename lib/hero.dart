@@ -1,6 +1,6 @@
 import 'armor.dart';
 import 'character.dart';
-import 'map/weapon.dart';
+import 'weapon.dart';
 
 class Hero extends Char {
   Weapon weapon;

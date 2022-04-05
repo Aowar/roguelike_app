@@ -22,6 +22,8 @@ bool flag = false;
 dynamic enemyKey;
 List<dynamic> enemyKeys = [];
 List<dynamic> enemyPos = [];
+List<dynamic> wallsKeys= [];
+List<dynamic> wallsPos= [];
 
 final List<dynamic> posKeys = [];
 var _playerWidth;
@@ -78,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final double _stepY = _playerHeight;
   final double _stepX = _playerWidth;
 
-  gettingCoordinates() {
+  gettCoordinates() {
     playerPoz = RectGetter.getRectFromKey(playerPozKey)!;
     posKeys.clear();
     posKeys.add(RectGetter.getRectFromKey(upperLeftWallPozKey)!);
@@ -91,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
     posKeys.add(RectGetter.getRectFromKey(rightLowerWallPozKey)!);
   }
 
-  gettingEnemyCoordinates() {
+  getEnemyCoordinates() {
     enemyPos.clear();
     for(int i = 0; i < enemyKeys.length; i++) {
       if (RectGetter.getRectFromKey(enemyKeys[i]) != null){
@@ -99,6 +101,16 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
     enemyKeys.clear();
+  }
+
+  getWallCoordinates() {
+    wallsPos.clear();
+    for(int i = 0; i < wallsKeys.length; i++) {
+      if (RectGetter.getRectFromKey(wallsKeys[i]) != null){
+        enemyPos.add(RectGetter.getRectFromKey(wallsKeys[i]));
+      }
+    }
+    wallsKeys.clear();
   }
 
   generateWall(BuildContext context, double height, double width, var key, Color color) {
@@ -117,12 +129,18 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  getAllCoordinates() {
+    gettCoordinates();
+    getEnemyCoordinates();
+    getWallCoordinates();
+    enemyMovement();
+  }
+
   goUpward() {
     setState(() {
-      gettingCoordinates();
-      gettingEnemyCoordinates();
+      gettCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top - _stepY, playerPoz.right, playerPoz.bottom);
-      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element))) {
+      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY - _stepY;
       }
     });
@@ -130,21 +148,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
   goDownward() {
     setState(() {
-      gettingCoordinates();
-      gettingEnemyCoordinates();
+      getAllCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right, playerPoz.bottom + _stepY);
-      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element))) {
+      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY + _stepY;
       }
     });
+    // for (int i = 0; i < _room.interior.length; i++){
+    //   print(_room.interior[i].toString());
+    // }
+    // print("\n");
   }
 
   goLeft() {
     setState(() {
-      gettingCoordinates();
-      gettingEnemyCoordinates();
+      getAllCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left - _stepX, playerPoz.top, playerPoz.right, playerPoz.bottom);
-      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element))) {
+      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX - _stepX;
       }
     });
@@ -152,16 +172,27 @@ class _MyHomePageState extends State<MyHomePage> {
 
   goRight() {
     setState(() {
-      gettingCoordinates();
-      gettingEnemyCoordinates();
+      getAllCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right + _stepX, playerPoz.bottom);
-      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element))) {
+      if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX + _stepX;
       }
     });
   }
 
-  spawnEnemy() {
+  enemyMovement() {
+    for (int i = 0; i < _room.interior.length; i++){
+      for (int j = 0; j < _room.interior[i].length; j++) {
+        if (_room.interior[i][j] is Char) {
+          print(_room.interior[i].toString());
+          _room.search(playerPoz.left / _playerWidth, playerPoz.top / _playerHeight, i, j);
+          print(_room.interior[i].toString());
+        }
+      }
+    }
+  }
+
+  getEnemy() {
     var _enemyKey = RectGetter.createGlobalKey();
     var rectGetter = RectGetter(
         key: _enemyKey,
@@ -177,8 +208,24 @@ class _MyHomePageState extends State<MyHomePage> {
     return rectGetter;
   }
 
-  double posX = _playerWidth*3;
-  double posY = _playerHeight*3;
+  getWall() {
+    var _wallKey = RectGetter.createGlobalKey();
+    var rectGetter = RectGetter(
+        key: _wallKey,
+        child: SizedBox(
+          width: _playerWidth,
+          height: _playerHeight,
+          child: Container(
+            color: Colors.black,
+          ),
+        )
+    );
+    wallsKeys.add(_wallKey);
+    return rectGetter;
+  }
+
+  double posX = _playerWidth;
+  double posY = _playerHeight;
   double horizontalWallsLength = _playerWidth*8;
   double verticalWallsLength = _playerHeight*8;
 
@@ -262,7 +309,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: SizedBox(
                                   width: _playerWidth,
                                   height: _playerHeight,
-                                  child: _room.interior[i][j] is Char ? spawnEnemy() : (_room.interior[i][j] == 0 ? Container() : (_room.interior[i][j] == 1 ? Container(color: Colors.black) : Container(color: Colors.amber))),
+                                  child: _room.interior[i][j] is Char ? getEnemy() : (_room.interior[i][j] == 0 ? Container() : (_room.interior[i][j] == 1 ? getWall() : Container(color: Colors.amber))),
                                 )
                             ),
                         // getEnemyKeysLog(),

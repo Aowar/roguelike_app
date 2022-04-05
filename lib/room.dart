@@ -43,17 +43,18 @@ class Room{
         interior.add(List.filled(height, 0));
       }
 
-      if(type == 4){
-        interior[wight % 2][height % 2] = new Chest(wight % 2, height % 2);
-      }
+
       // else if (type == 3) {
       //   interior[wight % 2][height % 2] = new Char(level, atk, def, hp, x, y);
       // }
       // else if (type == 1) {
       //   interior[wight % 2][height % 2] = 5;
       // }
+      if(type == 4){
+        interior[wight % 2][height % 2] = new Chest(wight % 2, height % 2);
+      }
       else {
-        int k = 0;
+        int k = 3;
         while(mob<5) {
           mob=0;
           for (int i = 0; i < wight; i++) {
@@ -64,7 +65,7 @@ class Room{
           for (int i = 0; i < wight; i++) {
             for (int j = 0; j < height; j++) {
               if (getNearby(i, j, interior.length-1, interior[0].length-1)) {
-                switch(max.nextInt(3)){
+                switch(max.nextInt(k)){
                   case 0:
                     interior[i][j] = 0;
                     break;
@@ -83,6 +84,7 @@ class Room{
                 }
                 if (interior[i][j] is Char) {
                   mob++; // считаем крипов в комнате
+                  if(mob==5) k--;
                 }
               }
             }
@@ -112,24 +114,24 @@ class Room{
   ///jP - координата y игрока (возможно x)
   ///iM - координата x моба (возможно y)
   ///jM - координата y моба (возможно x)
-  search(int iP,jP,iM,jM) {
+  search(double iP,jP,iM,jM) {
     if ((iP - iM).abs() <= 2 && (jP - jM).abs() <= 2) { //пора атаковать если в растоянии 2 блуков враг
       attack();
     } else {
-      if (iM - iP > 2 && interior[iM - 1][jM] != 1 && interior.length!=iM) { //проверка куда бвигаться, свободен ли путь и мы не на краю карты (если бахнем стенки на границе помнаты можно 3 улсловие убрать)
-        interior[iM - 1][jM] = 2; //сдвиг
+      if (iM - iP > 2 && interior[iM - 1][jM] < 1 && interior.length!=iM && interior[iM - 1][jM] !is Char) { //проверка куда бвигаться, свободен ли путь и мы не на краю карты (если бахнем стенки на границе помнаты можно 3 улсловие убрать)
+        interior[iM - 1][jM] = interior[iM].elementAt(jM); //сдвиг
         interior[iM][jM] = 0; //обнуление
       }
-      else if (iM - iP < 2 && interior[iM + 1][jM] != 1 && iM!=0) { //по аналогии
-        interior[iM + 1][jM] = 2;
+      else if (iM - iP < 2 && interior[iM + 1][jM] < 1 && iM!=0 && interior[iM + 1][jM] !is Char) { //по аналогии
+        interior[iM + 1][jM] = interior[iM].elementAt(jM);
         interior[iM][jM] = 0;
       }
-      if (jM - jP > 2 && interior[iM][jM - 1] != 1 && interior[0].length!=jM) {//по аналогии
-        interior[iM][jM - 1] = 2;
+      if (jM - jP > 2 && interior[iM][jM - 1] < 1 && interior[0].length!=jM && interior[iM][jM  - 1] !is Char) {//по аналогии
+        interior[iM][jM - 1] = interior[iM].elementAt(jM);
         interior[iM][jM] = 0;
       }
-      else if (jM - jP < 2 && interior[iM][jM + 1] != 1 && jM!=0) {//по аналогии
-        interior[iM][jM + 1] = 2;
+      else if (jM - jP < 2 && interior[iM][jM + 1] < 1 && jM!=0 && interior[iM][jM + 1] !is Char) {//по аналогии
+        interior[iM][jM + 1] = interior[iM].elementAt(jM);
         interior[iM][jM] = 0;
       }
     }
