@@ -8,7 +8,7 @@ class Chest extends Bobject {
 
   Chest(x, y) : super(x, y) {
     Random rng = new Random();
-    int gen = rng.nextInt(1);
+    int gen = rng.nextInt(2);
     if(gen == 1) {
       ///item = new Weapon(число * лвл);
     }

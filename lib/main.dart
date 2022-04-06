@@ -22,19 +22,21 @@ bool flag = false;
 dynamic enemyKey;
 List<dynamic> enemyKeys = [];
 List<dynamic> enemyPos = [];
-List<dynamic> wallsKeys= [];
-List<dynamic> wallsPos= [];
-
+List<dynamic> wallsKeys = [];
+List<dynamic> wallsPos = [];
+List<dynamic> exitPos = [];
 final List<dynamic> posKeys = [];
+double posX = _playerWidth;
+double posY = _playerHeight;
 var _playerWidth;
 var _playerHeight;
-double _fullFieldWidth = _playerWidth*18;
-double _fullFieldHeight = _playerHeight*18;
-double _fieldWidth = _playerWidth*16;
-double _fieldHeight = _playerHeight*16;
+double _fullFieldWidth = _playerWidth*19;
+double _fullFieldHeight = _playerHeight*19;
+double _fieldWidth = _playerWidth*17;
+double _fieldHeight = _playerHeight*17;
 late Room _room;
-int posXPl=0;
 int posYPl=0;
+int posXPl=0;
 
 void main() {
   runApp(const MyApp());
@@ -81,9 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final double _stepY = _playerHeight;
   final double _stepX = _playerWidth;
 
-  gettCoordinates() {
+  getCoordinates() {
     playerPoz = RectGetter.getRectFromKey(playerPozKey)!;
     posKeys.clear();
+    exitPos.clear();
     posKeys.add(RectGetter.getRectFromKey(upperLeftWallPozKey)!);
     posKeys.add(RectGetter.getRectFromKey(upperRightWallPozKey)!);
     posKeys.add(RectGetter.getRectFromKey(lowerLeftWallPozKey)!);
@@ -92,6 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
     posKeys.add(RectGetter.getRectFromKey(leftLowerWallPozKey)!);
     posKeys.add(RectGetter.getRectFromKey(rightUpperWallPozKey)!);
     posKeys.add(RectGetter.getRectFromKey(rightLowerWallPozKey)!);
+    exitPos.add(RectGetter.getRectFromKey(upperExit));
+    exitPos.add(RectGetter.getRectFromKey(leftExit));
+    exitPos.add(RectGetter.getRectFromKey(lowerExit));
+    exitPos.add(RectGetter.getRectFromKey(leftExit));
   }
 
   getEnemyCoordinates() {
@@ -131,19 +138,52 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   getAllCoordinates() {
-    gettCoordinates();
+    getCoordinates();
     getEnemyCoordinates();
     getWallCoordinates();
   }
 
+  getNextLevel(Rect position, int direction) {
+    if (exitPos.any((element) => element.overlaps(position))) {
+      dev.log("on exit");
+      switch (direction) {
+        case 1:
+          posY = _playerHeight * 17;
+          posYPl += 16;
+          break;
+        case 2:
+          posX = _playerWidth;
+          posXPl = 0;
+          break;
+        case 3:
+          posY = _playerHeight;
+          posYPl = 0;
+          break;
+        case 4:
+          posX = _playerWidth * 17;
+          posXPl += 16;
+          break;
+      }
+      _room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+      enemyKeys.clear();
+      enemyPos.clear();
+      wallsKeys.clear();
+      wallsPos.clear();
+      exitPos.clear();
+      posKeys.clear();
+    }
+  }
+
   goUpward() {
     setState(() {
-      gettCoordinates();
+      getCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top - _stepY, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY - _stepY;
-        posXPl--;
+        posYPl > 0 ? posYPl-- : posYPl = posYPl;
+        dev.log(posXPl.toString() + " " + posYPl.toString(), name: "Position x y");
       }
+      getNextLevel(nextPos, 1);
       enemyMovement();
     });
   }
@@ -154,9 +194,11 @@ class _MyHomePageState extends State<MyHomePage> {
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right, playerPoz.bottom + _stepY);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY + _stepY;
-        posXPl++;
+        posYPl < _room.interior.length ? posYPl++ : posYPl = posYPl;
+        dev.log(posXPl.toString() + " " + posYPl.toString(), name: "Position x y");
       }
       enemyMovement();
+      getNextLevel(nextPos, 3);
     });
   }
 
@@ -166,9 +208,11 @@ class _MyHomePageState extends State<MyHomePage> {
       Rect nextPos = Rect.fromLTRB(playerPoz.left - _stepX, playerPoz.top, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX - _stepX;
-        posYPl--;
+        posXPl > 0 ? posXPl-- : posXPl = posXPl;
+        dev.log(posXPl.toString() + " " + posYPl.toString(), name: "Position x y");
       }
       enemyMovement();
+      getNextLevel(nextPos, 4);
     });
   }
 
@@ -178,9 +222,11 @@ class _MyHomePageState extends State<MyHomePage> {
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right + _stepX, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX + _stepX;
-        posYPl++;
+        posXPl < _room.interior[0].length ? posXPl++ : posXPl = posXPl;
+        dev.log(posXPl.toString() + " " + posYPl.toString(), name: "Position x y");
       }
       enemyMovement();
+      getNextLevel(nextPos, 2);
     });
   }
 
@@ -188,7 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for (int i = 0; i < _room.interior.length; i++){
       for (int j = 0; j < _room.interior[i].length; j++) {
         if (_room.interior[i][j] is Char) {
-          _room.search(posXPl,posYPl, i, j);
+          _room.search(posYPl,posXPl, i, j);
         }
       }
     }
@@ -225,9 +271,6 @@ class _MyHomePageState extends State<MyHomePage> {
     wallsKeys.add(_wallKey);
     return rectGetter;
   }
-
-  double posX = _playerWidth;
-  double posY = _playerHeight;
   double horizontalWallsLength = _playerWidth*8;
   double verticalWallsLength = _playerHeight*8;
 
@@ -252,7 +295,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ///Generate upper left wall
                               generateWall(context, _playerHeight, horizontalWallsLength, upperLeftWallPozKey, Colors.black),
                               ///Generate upper exit
-                              generateWall(context, _playerHeight, _playerWidth*2, upperExit, Colors.black12),
+                              generateWall(context, _playerHeight, _playerWidth*3, upperExit, Colors.black12),
                               ///Generate upper right wall
                               generateWall(context, _playerHeight, horizontalWallsLength, upperRightWallPozKey, Colors.black),
                             ],
@@ -267,7 +310,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ///Generate lower left wall
                                 generateWall(context, _playerHeight, horizontalWallsLength, lowerLeftWallPozKey, Colors.black),
                                 ///Generate lower exit
-                                generateWall(context, _playerHeight, _playerWidth*2, lowerExit, Colors.black12),
+                                generateWall(context, _playerHeight, _playerWidth*3, lowerExit, Colors.black12),
                                 ///Generate lower right wall
                                 generateWall(context, _playerHeight, horizontalWallsLength, lowerRightWallPozKey, Colors.black),
                               ],
@@ -282,7 +325,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ///Generate left upper wall
                               generateWall(context, verticalWallsLength, _playerWidth, leftUpperWallPozKey, Colors.black),
                               ///Generate left exit
-                              generateWall(context, _playerHeight*2, _playerWidth, leftExit, Colors.black12),
+                              generateWall(context, _playerHeight*3, _playerWidth, leftExit, Colors.black12),
                               ///Generate left lower wall
                               generateWall(context, verticalWallsLength, _playerWidth, leftLowerWallPozKey, Colors.black),
                             ],
@@ -297,7 +340,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ///Generate right upper wall
                               generateWall(context, verticalWallsLength, _playerWidth, rightUpperWallPozKey, Colors.black),
                               ///Generate left exit
-                              generateWall(context, _playerHeight*2, _playerWidth, rightExit, Colors.black12),
+                              generateWall(context, _playerHeight*3, _playerWidth, rightExit, Colors.black12),
                               ///Generate right lower wall
                               generateWall(context, verticalWallsLength, _playerWidth, rightLowerWallPozKey, Colors.black),
                             ],

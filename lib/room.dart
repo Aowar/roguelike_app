@@ -86,7 +86,7 @@ class Room{
                 }
                 if (interior[i][j] is Char) {
                   mob++; // считаем крипов в комнате
-                  if(mob==5) k--;
+                  // if(mob==5) k--;
                 }
               }
             }
