@@ -67,7 +67,7 @@ class _MyHomePage extends StatelessWidget {
     _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
     room = Room(1, _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
-    _hero = player.Hero(Weapon(2), Armour(2), 1, 2, 2, 10, 0, _playerHeight, _playerWidth);
+    _hero = player.Hero(Weapon(2), Armour(2), 1, _playerHeight, _playerWidth);
     return const MyHomePage(title: "fds");
   }
 }
@@ -121,7 +121,6 @@ class _MyHomePageState extends State<MyHomePage> {
         enemyPos.add(RectGetter.getRectFromKey(wallsKeys[i]));
       }
     }
-    wallsKeys.clear();
   }
 
   generateWall(BuildContext context, double height, double width, var key, Color color) {
@@ -140,16 +139,19 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  clearAllKeys() {
+    enemyKeys.clear();
+    wallsKeys.clear();
+  }
+
   getAllCoordinates() {
     getCoordinates();
     getEnemyCoordinates();
     getWallCoordinates();
-    enemyKeys.clear();
   }
 
   getNextLevel(Rect position, int direction) {
     if (exitPos.any((element) => element.overlaps(position))) {
-      dev.log("on exit");
       switch (direction) {
         case 1:
           posY = _playerHeight * 17;
@@ -180,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   goUpward() {
     setState(() {
-      getCoordinates();
+      getAllCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top - _stepY, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY - _stepY;
@@ -188,16 +190,8 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       getNextLevel(nextPos, 1);
       enemyMovement();
-      dev.log(room.interior[posYPl - 1][posXPl].toString(), name: "Upper element");
-      dev.log((posYPl).toString() + " " + (posXPl).toString(), name: "Coordinates of player when went upward");
-      for(int i = 0; i < room.interior.length; i++){
-        dev.log(room.interior[i].toString(), name: "$i String of massive");
-      }
-      dev.log(enemyKeys.length.toString(), name: "Enemy keys");
-      for(int i = 0; i <= exitPos.length; i++) {
-        dev.log(exitPos[i].toString(), name: "$i Rect of enemyPoz");
-      }
     });
+    clearAllKeys();
   }
 
   goDownward() {
@@ -211,13 +205,8 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       enemyMovement();
       getNextLevel(nextPos, 3);
-      for(int i = 0; i < room.interior.length; i++){
-        dev.log(room.interior[i].toString(), name: "$i String of massive when went downward");
-      }
-      for(int i = 0; i < exitPos.length; i++) {
-        dev.log(exitPos[i].toString(), name: "$i Rect of enemyPoz");
-      }
     });
+    clearAllKeys();
   }
 
   goLeft() {
@@ -231,13 +220,8 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       enemyMovement();
       getNextLevel(nextPos, 4);
-      for(int i = 0; i < room.interior.length; i++){
-        dev.log(room.interior[i].toString(), name: "$i String of massive when went left");
-      }
-      for(int i = 0; i < exitPos.length; i++) {
-        dev.log(exitPos[i].toString(), name: "$i Rect of enemyPoz");
-      }
     });
+    clearAllKeys();
   }
 
   goRight() {
@@ -251,13 +235,8 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       enemyMovement();
       getNextLevel(nextPos, 2);
-      for(int i = 0; i < room.interior.length; i++){
-        dev.log(room.interior[i].toString(), name: "$i String of massive when went right");
-      }
-      for(int i = 0; i < exitPos.length; i++) {
-        dev.log(exitPos[i].toString(), name: "$i Rect of enemyPoz");
-      }
     });
+    clearAllKeys();
   }
 
   prepareAttack() {
@@ -266,22 +245,28 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  attack() {
+  attack(int direction) {
     setState(() {
-      getAllCoordinates();
-      _hero.attack(posYPl - 1, posXPl, room);
-      int direction = 1;
-      dev.log(enemyKeys.length.toString(), name: "Enemy keys");
       switch (direction) {
         case 1:
-          _hero.attack(playerPoz.top ~/ _playerHeight - 1, playerPoz.left ~/ _playerWidth, room);
+          _hero.attack(posYPl - 1, posXPl, room);
+          _hero.attack(posYPl - 2, posXPl, room);
           break;
         case 2:
-          _hero.attack(playerPoz.top ~/ _playerHeight, playerPoz.left ~/ _playerWidth + 1, room);
+          _hero.attack(posYPl, posXPl + 1, room);
+          _hero.attack(posYPl, posXPl + 2, room);
+          break;
+        case 3:
+          _hero.attack(posYPl + 1, posXPl, room);
+          _hero.attack(posYPl + 2, posXPl, room);
+          break;
+        case 4:
+          _hero.attack(posYPl, posXPl - 1, room);
+          _hero.attack(posYPl, posXPl - 2, room);
           break;
       }
-      getAllCoordinates();
     });
+    enemyKeys.clear();
   }
 
   enemyMovement() {
@@ -328,12 +313,6 @@ class _MyHomePageState extends State<MyHomePage> {
   double horizontalWallsLength = _playerWidth*8;
   double verticalWallsLength = _playerHeight*8;
   late Timer _timer;
-
-  @override
-  void dispose() {
-    super.dispose();
-    _timer.cancel();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -469,7 +448,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               child: IconButton(
                                                 icon: Icon(Icons.arrow_upward_rounded),
                                                 color: attackFlag ? Colors.red : Colors.black,
-                                                onPressed: attackFlag ? attack : goUpward,
+                                                onPressed: () {attackFlag ? attack(1) : goUpward();},
                                               ),
                                             ),
                                             Center(
@@ -482,7 +461,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     child: IconButton(
                                                       icon: Icon(Icons.keyboard_arrow_left_rounded),
                                                       color: attackFlag ? Colors.red : Colors.black,
-                                                      onPressed: goLeft,
+                                                      onPressed: () {attackFlag ? attack(4) : goLeft();},
                                                     ),
                                                   ),
                                                   SizedBox(
@@ -491,7 +470,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     child: IconButton(
                                                       icon: Icon(Icons.keyboard_arrow_right_rounded),
                                                       color: attackFlag ? Colors.red : Colors.black,
-                                                      onPressed: goRight,
+                                                      onPressed: () {attackFlag ? attack(2) : goRight();},
                                                     ),
                                                   ),
                                                 ],
@@ -503,7 +482,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               child: IconButton(
                                                 icon: Icon(Icons.arrow_downward_rounded),
                                                 color: attackFlag ? Colors.red : Colors.black,
-                                                onPressed: goDownward,
+                                                onPressed: () {attackFlag ? attack(3) : goDownward();},
                                               ),
                                             ),
                                           ],

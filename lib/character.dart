@@ -2,11 +2,17 @@ import 'bobject.dart';
 
 class Char extends Bobject{
   int level;
-  int hp;
-  int atk;
-  int def;
+  late int maxhp;
+  late int hp;
+  late int atk;
+  late int def;
 
-  Char(this.level, this.atk, this.def, this.hp, x, y) : super(x, y);
+  Char(this.level, x, y) : super(x, y) {
+    atk = level * 8;
+    maxhp = level * 50;
+    hp = maxhp;
+    def = level * 2;
+  }
 
   void Hit(Char char) {
     int reduce = (100/(100 + char.GetDef())).round(); //формула снижения урона

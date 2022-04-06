@@ -74,7 +74,7 @@ class Room{
                     break;
                   case 2:
                     if(max.nextInt(10)==9) {
-                      interior[i][j] = Char(1, 1, 1, 1, i, j);
+                      interior[i][j] = Char(1, i, j);
                     }
                     break;
                 }
@@ -97,9 +97,9 @@ class Room{
         ///низ
         interior[interior.length - 1].fillRange(0, interior[0].length - 1, 0);
         ///справа
-        interior.forEach((element) {element[interior[0].length - 1] = 0;});
+        for (var element in interior) {element[interior[0].length - 1] = 0;}
         ///слева
-        interior.forEach((element) {element[0] = 0;});
+        for (var element in interior) {element[0] = 0;}
       }
     }
   }
@@ -139,10 +139,6 @@ class Room{
         interior[iM][jM] = 0;
       }
     }
-  }
-
-  attack(){
-
   }
 
   @override
