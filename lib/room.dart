@@ -74,7 +74,7 @@ class Room{
                     break;
                   case 2:
                     if(max.nextInt(10)==9) {
-                      interior[i][j] = Char(1, 1, 1, 10, i, j);
+                      interior[i][j] = Char(1, 1, 1, 1, i, j);
                     }
                     break;
                 }

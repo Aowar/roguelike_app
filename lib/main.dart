@@ -1,6 +1,10 @@
-import 'package:roguelike_app/libs.dart';
-import 'dart:developer' as dev;
+import 'dart:async';
 
+import 'package:roguelike_app/armor.dart';
+import 'package:roguelike_app/libs.dart';
+import 'package:roguelike_app/weapon.dart';
+import 'dart:developer' as dev;
+import 'hero.dart' as player;
 import 'character.dart';
 
 var playerPozKey = RectGetter.createGlobalKey();
@@ -32,10 +36,11 @@ double _fullFieldWidth = _playerWidth*19;
 double _fullFieldHeight = _playerHeight*19;
 double _fieldWidth = _playerWidth*17;
 double _fieldHeight = _playerHeight*17;
-late Room _room;
+late Room room;
 int posYPl=0;
 int posXPl=0;
 bool attackFlag = false;
+late player.Hero _hero;
 
 void main() {
   runApp(const MyApp());
@@ -61,8 +66,8 @@ class _MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
-    _room = Room(1, _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
-
+    room = Room(1, _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+    _hero = player.Hero(Weapon(2), Armour(2), 1, 2, 2, 10, 0, _playerHeight, _playerWidth);
     return const MyHomePage(title: "fds");
   }
 }
@@ -107,7 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
         enemyPos.add(RectGetter.getRectFromKey(enemyKeys[i]));
       }
     }
-    enemyKeys.clear();
   }
 
   getWallCoordinates() {
@@ -140,6 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getCoordinates();
     getEnemyCoordinates();
     getWallCoordinates();
+    enemyKeys.clear();
   }
 
   getNextLevel(Rect position, int direction) {
@@ -163,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
           posXPl += 16;
           break;
       }
-      _room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+      room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
       enemyKeys.clear();
       enemyPos.clear();
       wallsKeys.clear();
@@ -180,66 +185,110 @@ class _MyHomePageState extends State<MyHomePage> {
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY - _stepY;
         posYPl > 0 ? posYPl-- : posYPl = posYPl;
-        dev.log(posXPl.toString() + " " + posYPl.toString(), name: "Position x y");
       }
       getNextLevel(nextPos, 1);
       enemyMovement();
+      dev.log(room.interior[posYPl - 1][posXPl].toString(), name: "Upper element");
+      dev.log((posYPl).toString() + " " + (posXPl).toString(), name: "Coordinates of player when went upward");
+      for(int i = 0; i < room.interior.length; i++){
+        dev.log(room.interior[i].toString(), name: "$i String of massive");
+      }
+      dev.log(enemyKeys.length.toString(), name: "Enemy keys");
+      for(int i = 0; i <= exitPos.length; i++) {
+        dev.log(exitPos[i].toString(), name: "$i Rect of enemyPoz");
+      }
     });
   }
 
   goDownward() {
+    getAllCoordinates();
     setState(() {
       getAllCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right, playerPoz.bottom + _stepY);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY + _stepY;
-        posYPl < _room.interior.length ? posYPl++ : posYPl = posYPl;
-        dev.log(posXPl.toString() + " " + posYPl.toString(), name: "Position x y");
+        posYPl < room.interior.length ? posYPl++ : posYPl = posYPl;
       }
       enemyMovement();
       getNextLevel(nextPos, 3);
+      for(int i = 0; i < room.interior.length; i++){
+        dev.log(room.interior[i].toString(), name: "$i String of massive when went downward");
+      }
+      for(int i = 0; i < exitPos.length; i++) {
+        dev.log(exitPos[i].toString(), name: "$i Rect of enemyPoz");
+      }
     });
   }
 
   goLeft() {
+    getAllCoordinates();
     setState(() {
       getAllCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left - _stepX, playerPoz.top, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX - _stepX;
         posXPl > 0 ? posXPl-- : posXPl = posXPl;
-        dev.log(posXPl.toString() + " " + posYPl.toString(), name: "Position x y");
       }
       enemyMovement();
       getNextLevel(nextPos, 4);
+      for(int i = 0; i < room.interior.length; i++){
+        dev.log(room.interior[i].toString(), name: "$i String of massive when went left");
+      }
+      for(int i = 0; i < exitPos.length; i++) {
+        dev.log(exitPos[i].toString(), name: "$i Rect of enemyPoz");
+      }
     });
   }
 
   goRight() {
+    getAllCoordinates();
     setState(() {
       getAllCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right + _stepX, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX + _stepX;
-        posXPl < _room.interior[0].length ? posXPl++ : posXPl = posXPl;
-        dev.log(posXPl.toString() + " " + posYPl.toString(), name: "Position x y");
+        posXPl < room.interior[0].length ? posXPl++ : posXPl = posXPl;
       }
       enemyMovement();
       getNextLevel(nextPos, 2);
+      for(int i = 0; i < room.interior.length; i++){
+        dev.log(room.interior[i].toString(), name: "$i String of massive when went right");
+      }
+      for(int i = 0; i < exitPos.length; i++) {
+        dev.log(exitPos[i].toString(), name: "$i Rect of enemyPoz");
+      }
     });
   }
 
-  prepareAtack() {
+  prepareAttack() {
     setState(() {
       attackFlag = !attackFlag;
     });
   }
 
+  attack() {
+    setState(() {
+      getAllCoordinates();
+      _hero.attack(posYPl - 1, posXPl, room);
+      int direction = 1;
+      dev.log(enemyKeys.length.toString(), name: "Enemy keys");
+      switch (direction) {
+        case 1:
+          _hero.attack(playerPoz.top ~/ _playerHeight - 1, playerPoz.left ~/ _playerWidth, room);
+          break;
+        case 2:
+          _hero.attack(playerPoz.top ~/ _playerHeight, playerPoz.left ~/ _playerWidth + 1, room);
+          break;
+      }
+      getAllCoordinates();
+    });
+  }
+
   enemyMovement() {
-    for (int i = 0; i < _room.interior.length; i++){
-      for (int j = 0; j < _room.interior[i].length; j++) {
-        if (_room.interior[i][j] is Char) {
-          _room.search(posYPl,posXPl, i, j);
+    for (int i = 0; i < room.interior.length; i++){
+      for (int j = 0; j < room.interior[i].length; j++) {
+        if (room.interior[i][j] is Char) {
+          room.search(posYPl,posXPl, i, j);
         }
       }
     }
@@ -278,6 +327,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   double horizontalWallsLength = _playerWidth*8;
   double verticalWallsLength = _playerHeight*8;
+  late Timer _timer;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _timer.cancel();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -351,15 +407,15 @@ class _MyHomePageState extends State<MyHomePage> {
                             ],
                           ),
                         ),
-                        for (int i = 0; i < _room.interior.length; i++)
-                          for (int j = 0; j < _room.interior[i].length; j++)
+                        for (int i = 0; i < room.interior.length; i++)
+                          for (int j = 0; j < room.interior[i].length; j++)
                             Positioned(
                                 top: _playerHeight*(i+1),
                                 left: _playerWidth*(j+1),
                                 child: SizedBox(
                                   width: _playerWidth,
                                   height: _playerHeight,
-                                  child: _room.interior[i][j] is Char ? getEnemy() : (_room.interior[i][j] == 0 ? Container() : (_room.interior[i][j] == 1 ? getWall() : Container(color: Colors.amber))),
+                                  child: room.interior[i][j] is Char ? getEnemy() : (room.interior[i][j] == 0 ? Container() : (room.interior[i][j] == 1 ? getWall() : Container(color: Colors.amber))),
                                 )
                             ),
                         // getEnemyKeysLog(),
@@ -413,7 +469,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               child: IconButton(
                                                 icon: Icon(Icons.arrow_upward_rounded),
                                                 color: attackFlag ? Colors.red : Colors.black,
-                                                onPressed: goUpward,
+                                                onPressed: attackFlag ? attack : goUpward,
                                               ),
                                             ),
                                             Center(
@@ -465,7 +521,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 height: 50,
                                 child: IconButton(
                                   icon: Icon(Icons.arrow_downward_rounded),
-                                  onPressed: prepareAtack,
+                                  onPressed: prepareAttack,
                                 ),
                               ),
                             )
