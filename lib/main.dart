@@ -1,7 +1,5 @@
-import 'package:roguelike_app/bobject.dart';
 import 'package:roguelike_app/libs.dart';
 import 'dart:developer' as dev;
-import 'dart:ui' as ui;
 
 import 'character.dart';
 
@@ -37,6 +35,7 @@ double _fieldHeight = _playerHeight*17;
 late Room _room;
 int posYPl=0;
 int posXPl=0;
+bool attackFlag = false;
 
 void main() {
   runApp(const MyApp());
@@ -230,6 +229,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  prepareAtack() {
+    setState(() {
+      attackFlag = !attackFlag;
+    });
+  }
+
   enemyMovement() {
     for (int i = 0; i < _room.interior.length; i++){
       for (int j = 0; j < _room.interior[i].length; j++) {
@@ -407,6 +412,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               height: 50,
                                               child: IconButton(
                                                 icon: Icon(Icons.arrow_upward_rounded),
+                                                color: attackFlag ? Colors.red : Colors.black,
                                                 onPressed: goUpward,
                                               ),
                                             ),
@@ -419,6 +425,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     height: 50,
                                                     child: IconButton(
                                                       icon: Icon(Icons.keyboard_arrow_left_rounded),
+                                                      color: attackFlag ? Colors.red : Colors.black,
                                                       onPressed: goLeft,
                                                     ),
                                                   ),
@@ -427,6 +434,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     height: 50,
                                                     child: IconButton(
                                                       icon: Icon(Icons.keyboard_arrow_right_rounded),
+                                                      color: attackFlag ? Colors.red : Colors.black,
                                                       onPressed: goRight,
                                                     ),
                                                   ),
@@ -438,6 +446,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               height: 50,
                                               child: IconButton(
                                                 icon: Icon(Icons.arrow_downward_rounded),
+                                                color: attackFlag ? Colors.red : Colors.black,
                                                 onPressed: goDownward,
                                               ),
                                             ),
@@ -447,6 +456,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                     )
                                   ],
                                 )
+                            ),
+                            Positioned(
+                              top: 5,
+                              right: 15,
+                              child: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: IconButton(
+                                  icon: Icon(Icons.arrow_downward_rounded),
+                                  onPressed: prepareAtack,
+                                ),
+                              ),
                             )
                           ],
                         ),
