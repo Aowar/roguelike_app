@@ -73,7 +73,9 @@ class Room{
                     interior[i][j] = 1;
                     break;
                   case 2:
-                    interior[i][j] = Char(1, 1, 1, 10, i, j);
+                    if(max.nextInt(10)==9) {
+                      interior[i][j] = Char(1, 1, 1, 10, i, j);
+                    }
                     break;
                 }
 
@@ -90,12 +92,14 @@ class Room{
             }
           }
         }
-        interior[0][center - 1] = 0;
-        interior[0][center] = 0;
-        interior[0][center + 1] = 0;
-        interior[interior.length - 1][center - 1] = 0;
-        interior[interior.length - 1][center] = 0;
-        interior[interior.length - 1][center + 1] = 0;
+        ///верх
+        interior[0].fillRange(0, interior[0].length - 1, 0);
+        ///низ
+        interior[interior.length - 1].fillRange(0, interior[0].length - 1, 0);
+        ///справа
+        interior.forEach((element) {element[interior[0].length - 1] = 0;});
+        ///слева
+        interior.forEach((element) {element[0] = 0;});
       }
     }
   }

@@ -184,9 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for (int i = 0; i < _room.interior.length; i++){
       for (int j = 0; j < _room.interior[i].length; j++) {
         if (_room.interior[i][j] is Char) {
-          print(_room.interior[i].toString());
           _room.search(playerPoz.left / _playerWidth, playerPoz.top / _playerHeight, i, j);
-          print(_room.interior[i].toString());
         }
       }
     }
