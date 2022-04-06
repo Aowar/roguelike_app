@@ -265,6 +265,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _hero.attack(posYPl, posXPl - 2, room);
           break;
       }
+      dev.log(_hero.exp.toString(), name: "Hero xp");
     });
     enemyKeys.clear();
   }
@@ -494,14 +495,35 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             Positioned(
                               top: 5,
-                              right: 15,
+                              right: MediaQuery.of(context).size.width / 25,
                               child: SizedBox(
-                                width: 50,
-                                height: 50,
+                                width: 70,
+                                height: 70,
                                 child: IconButton(
                                   icon: Icon(Icons.arrow_downward_rounded),
                                   onPressed: prepareAttack,
                                 ),
+                              ),
+                            ),
+                            Positioned(
+                              left: MediaQuery.of(context).size.width / 25,
+                              top: 5,
+                              child: SizedBox(
+                                width: 70,
+                                height: 70,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black)
+                                  ),
+                                  child: Center(
+                                    child: Text(_hero.hp.toString(),
+                                      style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16
+                                      ),
+                                    ),
+                                  )
+                                )
                               ),
                             )
                           ],

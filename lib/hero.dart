@@ -52,20 +52,24 @@ class Hero extends Char {
   void GiveXP(Char char) {
     if(CheckHP(char)) {
       exp = exp + (expneeded/20).round();
+      hp += ((maxhp-hp)/2).round();
+      if(hp > maxhp) {
+        hp = maxhp;
+      }
       LvlUp();
     }
   }
 
 
-  void attack(int i, j, Room room){
-    if(room.interior[i][j] is Char){
-      Char char = room.interior[i][j];
-      Hit(char);
-      room.interior[i][j] = char;
-      if(CheckHP(char)) {
-        room.interior[i][j]=0;
-        dev.log(exp.toString(), name: "Player xp");
-      }
-    }
-  }
+  // void attack(int i, j, Room room){
+  //   if(room.interior[i][j] is Char){
+  //     Char char = room.interior[i][j];
+  //     Hit(char);
+  //     room.interior[i][j] = char;
+  //     if(CheckHP(char)) {
+  //       room.interior[i][j]=0;
+  //       dev.log(exp.toString(), name: "Player xp");
+  //     }
+  //   }
+  // }
 }

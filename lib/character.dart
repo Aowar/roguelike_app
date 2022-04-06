@@ -1,3 +1,5 @@
+import 'package:roguelike_app/room.dart';
+
 import 'bobject.dart';
 
 class Char extends Bobject{
@@ -57,6 +59,17 @@ class Char extends Bobject{
     }
     else {
       return false;
+    }
+  }
+
+  void attack(int i, j, Room room){
+    if(room.interior[i][j] is Char){
+      Char char = room.interior[i][j];
+      Hit(char);
+      room.interior[i][j] = char;
+      if(CheckHP(char)) {
+        room.interior[i][j]=0;
+      }
     }
   }
 }
