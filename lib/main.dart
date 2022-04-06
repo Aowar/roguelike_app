@@ -33,7 +33,8 @@ double _fullFieldHeight = _playerHeight*18;
 double _fieldWidth = _playerWidth*16;
 double _fieldHeight = _playerHeight*16;
 late Room _room;
-
+int posXPl=0;
+int posYPl=0;
 
 void main() {
   runApp(const MyApp());
@@ -133,7 +134,6 @@ class _MyHomePageState extends State<MyHomePage> {
     gettCoordinates();
     getEnemyCoordinates();
     getWallCoordinates();
-    enemyMovement();
   }
 
   goUpward() {
@@ -142,7 +142,9 @@ class _MyHomePageState extends State<MyHomePage> {
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top - _stepY, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY - _stepY;
+        posXPl--;
       }
+      enemyMovement();
     });
   }
 
@@ -152,12 +154,10 @@ class _MyHomePageState extends State<MyHomePage> {
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right, playerPoz.bottom + _stepY);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY + _stepY;
+        posXPl++;
       }
+      enemyMovement();
     });
-    // for (int i = 0; i < _room.interior.length; i++){
-    //   print(_room.interior[i].toString());
-    // }
-    // print("\n");
   }
 
   goLeft() {
@@ -166,7 +166,9 @@ class _MyHomePageState extends State<MyHomePage> {
       Rect nextPos = Rect.fromLTRB(playerPoz.left - _stepX, playerPoz.top, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX - _stepX;
+        posYPl--;
       }
+      enemyMovement();
     });
   }
 
@@ -176,7 +178,9 @@ class _MyHomePageState extends State<MyHomePage> {
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right + _stepX, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX + _stepX;
+        posYPl++;
       }
+      enemyMovement();
     });
   }
 
@@ -184,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for (int i = 0; i < _room.interior.length; i++){
       for (int j = 0; j < _room.interior[i].length; j++) {
         if (_room.interior[i][j] is Char) {
-          _room.search(playerPoz.left / _playerWidth, playerPoz.top / _playerHeight, i, j);
+          _room.search(posXPl,posYPl, i, j);
         }
       }
     }

@@ -118,23 +118,23 @@ class Room{
   ///jP - координата y игрока (возможно x)
   ///iM - координата x моба (возможно y)
   ///jM - координата y моба (возможно x)
-  search(double iP,jP,iM,jM) {
-    if ((iP - iM).abs() <= 2 && (jP - jM).abs() <= 2) { //пора атаковать если в растоянии 2 блуков враг
-      attack();
-    } else {
-      if (iM - iP > 2 && interior[iM - 1][jM] < 1 && interior.length!=iM && interior[iM - 1][jM] !is Char) { //проверка куда бвигаться, свободен ли путь и мы не на краю карты (если бахнем стенки на границе помнаты можно 3 улсловие убрать)
+  search(int iP,jP,iM,jM) {
+    if ((iP - iM).abs() <= 1 && (jP - jM).abs() <= 1) { //пора атаковать если в растоянии 2 блуков враг
+      // attack();
+    } else if((iM - iP).abs()<5 && (jM - jP).abs()<5){
+      if (iM-iP> 0 && interior[iM - 1][jM] == 0) { //проверка куда бвигаться, свободен ли путь и мы не на краю карты (если бахнем стенки на границе помнаты можно 3 улсловие убрать)
         interior[iM - 1][jM] = interior[iM].elementAt(jM); //сдвиг
         interior[iM][jM] = 0; //обнуление
       }
-      else if (iM - iP < 2 && interior[iM + 1][jM] < 1 && iM!=0 && interior[iM + 1][jM] !is Char) { //по аналогии
+      else if (iM - iP < 0 && interior[iM + 1][jM] == 0) { //по аналогии
         interior[iM + 1][jM] = interior[iM].elementAt(jM);
         interior[iM][jM] = 0;
       }
-      if (jM - jP > 2 && interior[iM][jM - 1] < 1 && interior[0].length!=jM && interior[iM][jM  - 1] !is Char) {//по аналогии
+      else if (jM - jP > 0 && interior[iM][jM - 1] == 0) {//по аналогии
         interior[iM][jM - 1] = interior[iM].elementAt(jM);
         interior[iM][jM] = 0;
       }
-      else if (jM - jP < 2 && interior[iM][jM + 1] < 1 && jM!=0 && interior[iM][jM + 1] !is Char) {//по аналогии
+      else if (jM - jP < 0 && interior[iM][jM + 1]==0) {//по аналогии
         interior[iM][jM + 1] = interior[iM].elementAt(jM);
         interior[iM][jM] = 0;
       }
