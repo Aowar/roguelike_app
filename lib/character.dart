@@ -62,13 +62,15 @@ class Char extends Bobject{
     }
   }
 
-  void attack(int i, j, Room room){
-    if(room.interior[i][j] is Char){
-      Char char = room.interior[i][j];
-      Hit(char);
-      room.interior[i][j] = char;
-      if(CheckHP(char)) {
-        room.interior[i][j]=0;
+  void attack(int i, j, Room room) {
+    if (i <= room.interior.length - 1 && j <= room.interior[0].length - 1 && i >=0 && j>=0) {
+      if (room.interior[i][j] is Char) {
+        Char char = room.interior[i][j];
+        Hit(char);
+        room.interior[i][j] = char;
+        if (CheckHP(char)) {
+          room.interior[i][j] = 0;
+        }
       }
     }
   }
