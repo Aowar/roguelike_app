@@ -3,7 +3,6 @@ import 'package:roguelike_app/armor.dart';
 import 'package:roguelike_app/libs.dart';
 import 'package:roguelike_app/weapon.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'dart:developer' as dev;
 import 'hero.dart' as player;
 import 'character.dart';
 
