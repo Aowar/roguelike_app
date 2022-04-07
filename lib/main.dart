@@ -1,8 +1,8 @@
-import 'dart:async';
-import "dart:io";
+import 'package:flutter/services.dart';
 import 'package:roguelike_app/armor.dart';
 import 'package:roguelike_app/libs.dart';
 import 'package:roguelike_app/weapon.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'dart:developer' as dev;
 import 'hero.dart' as player;
 import 'character.dart';
@@ -44,7 +44,6 @@ int posYPl=0;
 int posXPl=0;
 bool attackFlag = false;
 late player.Hero _hero;
-late int _maxKills;
 
 void main() {
   runApp(const MyApp());
@@ -52,9 +51,15 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-  // This widget is the root of your application.
+  void _portraitModeOnly() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
   @override
   Widget build(BuildContext context) {
+    _portraitModeOnly();
     return const MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -70,7 +75,7 @@ class _MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
-    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
+    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
     _hero = player.Hero(Weapon(2, "sword"), Armour(2), 1, _playerHeight, _playerWidth);
     return const MyHomePage(title: "fds");
   }
@@ -128,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   getChestCoordinates() {
-        chestPos = RectGetter.getRectFromKey(chestKey);
+    chestPos = RectGetter.getRectFromKey(chestKey);
   }
 
   generateWall(BuildContext context, double height, double width, var key, Color color) {
@@ -181,8 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
           posXPl += 16;
           break;
       }
-      room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
-      if(enemyPos.length==0)_hero.hp=_hero.maxhp;
+      room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
       enemyKeys.clear();
       enemyPos.clear();
       wallsKeys.clear();
@@ -193,13 +197,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   restartLevel() {
-      room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
-      enemyKeys.clear();
-      enemyPos.clear();
-      wallsKeys.clear();
-      wallsPos.clear();
-      exitPos.clear();
-      posKeys.clear();
+    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+    enemyKeys.clear();
+    enemyPos.clear();
+    wallsKeys.clear();
+    wallsPos.clear();
+    exitPos.clear();
+    posKeys.clear();
   }
 
   goUpward() {
@@ -292,26 +296,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  generateAttackContainer() {
-    return Positioned(
-        top: _playerHeight,
-        left: _playerWidth,
-        child: SizedBox(
-          width: _playerWidth,
-          height: _playerHeight,
-          child: Container(
-            color: Colors.blue,
-          ),
-        )
-    );
-  }
-
   playerAttack(int direction) {
     setState(() {
       switch (direction) {
         case 1:
           if(_hero.weapon.GetWeaponType()=="sword") {
-            generateAttackContainer();
             _hero.attack(posYPl - 1, posXPl, room);
           } else if(_hero.weapon.GetWeaponType()=="spear"){
             _hero.attack(posYPl - 1, posXPl, room);
@@ -330,8 +319,8 @@ class _MyHomePageState extends State<MyHomePage> {
           if(_hero.weapon.GetWeaponType()=="sword") {
             _hero.attack(posYPl + 1, posXPl, room);
           } else if(_hero.weapon.GetWeaponType()=="spear"){
-           _hero.attack(posYPl + 1, posXPl, room);
-           _hero.attack(posYPl + 2, posXPl, room);
+            _hero.attack(posYPl + 1, posXPl, room);
+            _hero.attack(posYPl + 2, posXPl, room);
           }
           break;
         case 4:
@@ -349,22 +338,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   enemyMovement() {
-    int sas = 0;
     for (int i = 0; i < room.interior.length; i++){
-
-      for (int j = 0; j < room.interior[0].length; j++) {
+      for (int j = 0; j < room.interior[i].length; j++) {
         if (room.interior[i][j] is Char) {
           room.search(posYPl,posXPl, i, j, _hero);
-          print(sas);
         }
       }
-      // print(room.interior[i]);
     }
-    print("\n");
-    // print("\n");
   }
 
-  getEnemy() {
+  getEnemy(int i, int j) {
     var _enemyKey = RectGetter.createGlobalKey();
     var rectGetter = RectGetter(
         key: _enemyKey,
@@ -372,7 +355,15 @@ class _MyHomePageState extends State<MyHomePage> {
           width: _playerWidth,
           height: _playerHeight,
           child: Container(
-            color: Colors.red,
+              color: Colors.red,
+              child: Center(
+                child: Text(room.interior[i][j].hp.toString(),
+                    style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.white
+                    )
+                ),
+              )
           ),
         )
     );
@@ -410,6 +401,46 @@ class _MyHomePageState extends State<MyHomePage> {
     return rectGetter;
   }
 
+  getItem(int i) {
+    return SizedBox(
+        width: 80,
+        height: 80,
+        child: GestureDetector(
+          child: Container(
+            decoration: BoxDecoration(
+                border: Border.all()
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                if(_hero.inventory[i] is Weapon) ...[
+                  Text(_hero.inventory[i].type.toString(),
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  Text("Attack: " + _hero.inventory[i].atk.toString(),
+                    style: const TextStyle(fontSize: 14),
+                  )
+                ] else ...[
+                  Text("Armor" + _hero.inventory[i].def.toString(),
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ]
+              ],
+            ),
+          ),
+          onTap: () {
+            setState(() {
+              if(_hero.inventory[i] is Weapon) {
+                _hero.SetWeapon(_hero.inventory[i]);
+              } else {
+                _hero.SetArmour(_hero.inventory[i]);
+              }
+            });
+          },
+        )
+    );
+  }
+
   playerDead() {
     return Scaffold(
       body: Column(
@@ -427,7 +458,6 @@ class _MyHomePageState extends State<MyHomePage> {
               const Text("Press ",
                 style: TextStyle(
                   fontSize: 20,
-                  fontStyle: FontStyle.italic,
                   color: Colors.red,
                 ),
               ),
@@ -440,14 +470,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       posY = _playerHeight;
                       posXPl = 0;
                       posYPl = 0;
+                      attackFlag = !attackFlag;
                     });
                   },
-                  icon: const Icon(Icons.refresh_sharp)
+                  icon: const Icon(Icons.refresh_sharp, color: Colors.red)
               ),
               const Text(" to restart",
                 style: TextStyle(
                   fontSize: 20,
-                  fontStyle: FontStyle.italic,
                   color: Colors.red,
                 ),
               ),
@@ -464,260 +494,317 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return _hero.hp <= 0 ? playerDead() : Scaffold(
-      body: Column(
-        children: [
-          SizedBox(
-              child: Container(
-                  color: Colors.black12,
-                  child: SizedBox(
-                    width: _fullFieldWidth,
-                    height: _fullFieldHeight,
-                    child: Stack(
-                      children: <Widget>[
-                        /// Generate top side
-                        Positioned(
-                          left: 0,
-                          child: Row(
+        body: Stack(
+          children: [
+            Column(
+              children: [
+                SizedBox(
+                    child: Container(
+                        color: Colors.black12,
+                        child: SizedBox(
+                          width: _fullFieldWidth,
+                          height: _fullFieldHeight,
+                          child: Stack(
                             children: [
-                              ///Generate upper left wall
-                              generateWall(context, _playerHeight, horizontalWallsLength, upperLeftWallPozKey, Colors.black),
-                              ///Generate upper exit
-                              generateWall(context, _playerHeight, _playerWidth*3, upperExit, Colors.black12),
-                              ///Generate upper right wall
-                              generateWall(context, _playerHeight, horizontalWallsLength, upperRightWallPozKey, Colors.black),
-                            ],
-                          ),
-                        ),
-                        /// Generate bottom side
-                        Positioned(
-                            bottom: 0,
-                            left: 0,
-                            child: Row(
-                              children: [
-                                ///Generate lower left wall
-                                generateWall(context, _playerHeight, horizontalWallsLength, lowerLeftWallPozKey, Colors.black),
-                                ///Generate lower exit
-                                generateWall(context, _playerHeight, _playerWidth*3, lowerExit, Colors.black12),
-                                ///Generate lower right wall
-                                generateWall(context, _playerHeight, horizontalWallsLength, lowerRightWallPozKey, Colors.black),
-                              ],
-                            )
-                        ),
-                        /// Generate left side
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          child: Column(
-                            children: [
-                              ///Generate left upper wall
-                              generateWall(context, verticalWallsLength, _playerWidth, leftUpperWallPozKey, Colors.black),
-                              ///Generate left exit
-                              generateWall(context, _playerHeight*3, _playerWidth, leftExit, Colors.black12),
-                              ///Generate left lower wall
-                              generateWall(context, verticalWallsLength, _playerWidth, leftLowerWallPozKey, Colors.black),
-                            ],
-                          ),
-                        ),
-                        /// Generate right side
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: Column(
-                            children: [
-                              ///Generate right upper wall
-                              generateWall(context, verticalWallsLength, _playerWidth, rightUpperWallPozKey, Colors.black),
-                              ///Generate left exit
-                              generateWall(context, _playerHeight*3, _playerWidth, rightExit, Colors.black12),
-                              ///Generate right lower wall
-                              generateWall(context, verticalWallsLength, _playerWidth, rightLowerWallPozKey, Colors.black),
-                            ],
-                          ),
-                        ),
-                        for (int i = 0; i < room.interior.length; i++)
-                          for (int j = 0; j < room.interior[i].length; j++)
-                            Positioned(
-                                top: _playerHeight*(i+1),
-                                left: _playerWidth*(j+1),
+                              /// Generate top side
+                              Positioned(
+                                left: 0,
+                                child: Row(
+                                  children: [
+                                    ///Generate upper left wall
+                                    generateWall(context, _playerHeight, horizontalWallsLength, upperLeftWallPozKey, Colors.black),
+                                    ///Generate upper exit
+                                    generateWall(context, _playerHeight, _playerWidth*3, upperExit, Colors.black12),
+                                    ///Generate upper right wall
+                                    generateWall(context, _playerHeight, horizontalWallsLength, upperRightWallPozKey, Colors.black),
+                                  ],
+                                ),
+                              ),
+                              /// Generate bottom side
+                              Positioned(
+                                  bottom: 0,
+                                  left: 0,
+                                  child: Row(
+                                    children: [
+                                      ///Generate lower left wall
+                                      generateWall(context, _playerHeight, horizontalWallsLength, lowerLeftWallPozKey, Colors.black),
+                                      ///Generate lower exit
+                                      generateWall(context, _playerHeight, _playerWidth*3, lowerExit, Colors.black12),
+                                      ///Generate lower right wall
+                                      generateWall(context, _playerHeight, horizontalWallsLength, lowerRightWallPozKey, Colors.black),
+                                    ],
+                                  )
+                              ),
+                              /// Generate left side
+                              Positioned(
+                                top: 0,
+                                left: 0,
+                                child: Column(
+                                  children: [
+                                    ///Generate left upper wall
+                                    generateWall(context, verticalWallsLength, _playerWidth, leftUpperWallPozKey, Colors.black),
+                                    ///Generate left exit
+                                    generateWall(context, _playerHeight*3, _playerWidth, leftExit, Colors.black12),
+                                    ///Generate left lower wall
+                                    generateWall(context, verticalWallsLength, _playerWidth, leftLowerWallPozKey, Colors.black),
+                                  ],
+                                ),
+                              ),
+                              /// Generate right side
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: Column(
+                                  children: [
+                                    ///Generate right upper wall
+                                    generateWall(context, verticalWallsLength, _playerWidth, rightUpperWallPozKey, Colors.black),
+                                    ///Generate left exit
+                                    generateWall(context, _playerHeight*3, _playerWidth, rightExit, Colors.black12),
+                                    ///Generate right lower wall
+                                    generateWall(context, verticalWallsLength, _playerWidth, rightLowerWallPozKey, Colors.black),
+                                  ],
+                                ),
+                              ),
+                              for (int i = 0; i < room.interior.length; i++)
+                                for (int j = 0; j < room.interior[i].length; j++)
+                                  Positioned(
+                                      top: _playerHeight*(i+1),
+                                      left: _playerWidth*(j+1),
+                                      child: SizedBox(
+                                        width: _playerWidth,
+                                        height: _playerHeight,
+                                        child: room.interior[i][j] is Char ? getEnemy(i, j) : (room.interior[i][j] == 0 ? Container() : (room.interior[i][j] == 1 ? getWall() : getChest())),
+                                      )
+                                  ),
+                              // getEnemyKeysLog(),
+                              Positioned(
+                                left: posX,
+                                top: posY,
                                 child: SizedBox(
                                   width: _playerWidth,
                                   height: _playerHeight,
-                                  child: room.interior[i][j] is Char ? getEnemy() : (room.interior[i][j] == 0 ? Container() : (room.interior[i][j] == 1 ? getWall() : getChest())),
-                                )
-                            ),
-                        // getEnemyKeysLog(),
-                        Positioned(
-                          left: posX,
-                          top: posY,
-                          child: SizedBox(
-                            width: _playerWidth,
-                            height: _playerHeight,
-                            child: RectGetter(
-                                key: playerPozKey,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    RectGetter.getRectFromKey(playerPozKey);
-                                    RectGetter.getRectFromKey(upperLeftWallPozKey);
-                                  },
-                                  child: Container(
-                                    color: Colors.green,
+                                  child: RectGetter(
+                                      key: playerPozKey,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          RectGetter.getRectFromKey(playerPozKey);
+                                          RectGetter.getRectFromKey(upperLeftWallPozKey);
+                                        },
+                                        child: Container(
+                                          color: Colors.green,
+                                        ),
+                                      )
                                   ),
-                                )
-                            ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-              )
-          ),
-          Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
+                        )
+                    )
+                ),
+                Center(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 20),
-                      child: Container(
-                        child: Stack(
-                          children: [
-                            Container(
-                                child: Column(
-                                  children: [
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: Center(
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            SizedBox(
-                                              width: 50,
-                                              height: 50,
-                                              child: IconButton(
-                                                icon: const Icon(Icons.arrow_upward_rounded),
-                                                color: attackFlag ? Colors.red : Colors.black,
-                                                onPressed: () {attackFlag ? playerAttack(1) : goUpward();},
-                                              ),
-                                            ),
-                                            Center(
-                                              child: Row(
+                      child: SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: Container(
+                              child: Stack(
+                                children: [
+                                  Container(
+                                      child: Column(
+                                        children: [
+                                          SizedBox(
+                                            width: MediaQuery.of(context).size.width,
+                                            child: Center(
+                                              child: Column(
                                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                 children: [
                                                   SizedBox(
                                                     width: 50,
                                                     height: 50,
                                                     child: IconButton(
-                                                      icon: const Icon(Icons.keyboard_arrow_left_rounded),
+                                                      icon: const Icon(Icons.arrow_upward_rounded),
                                                       color: attackFlag ? Colors.red : Colors.black,
-                                                      onPressed: () {attackFlag ? playerAttack(4) : goLeft();},
+                                                      onPressed: () {attackFlag ? playerAttack(1) : goUpward();},
+                                                    ),
+                                                  ),
+                                                  Center(
+                                                    child: Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                      children: [
+                                                        SizedBox(
+                                                          width: 50,
+                                                          height: 50,
+                                                          child: IconButton(
+                                                            icon: const Icon(Icons.keyboard_arrow_left_rounded),
+                                                            color: attackFlag ? Colors.red : Colors.black,
+                                                            onPressed: () {attackFlag ? playerAttack(4) : goLeft();},
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 50,
+                                                          height: 50,
+                                                          child: IconButton(
+                                                            icon: const Icon(Icons.local_fire_department),
+                                                            color: attackFlag ? Colors.red : Colors.black,
+                                                            onPressed: prepareAttack,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 50,
+                                                          height: 50,
+                                                          child: IconButton(
+                                                            icon: const Icon(Icons.keyboard_arrow_right_rounded),
+                                                            color: attackFlag ? Colors.red : Colors.black,
+                                                            onPressed: () {attackFlag ? playerAttack(2) : goRight();},
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                                   SizedBox(
                                                     width: 50,
                                                     height: 50,
                                                     child: IconButton(
-                                                      icon: const Icon(Icons.local_fire_department),
+                                                      icon: const Icon(Icons.arrow_downward_rounded),
                                                       color: attackFlag ? Colors.red : Colors.black,
-                                                      onPressed: prepareAttack,
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 50,
-                                                    height: 50,
-                                                    child: IconButton(
-                                                      icon: const Icon(Icons.keyboard_arrow_right_rounded),
-                                                      color: attackFlag ? Colors.red : Colors.black,
-                                                      onPressed: () {attackFlag ? playerAttack(2) : goRight();},
+                                                      onPressed: () {attackFlag ? playerAttack(3) : goDownward();},
                                                     ),
                                                   ),
                                                 ],
                                               ),
                                             ),
-                                            SizedBox(
-                                              width: 50,
-                                              height: 50,
-                                              child: IconButton(
-                                                icon: const Icon(Icons.arrow_downward_rounded),
-                                                color: attackFlag ? Colors.red : Colors.black,
-                                                onPressed: () {attackFlag ? playerAttack(3) : goDownward();},
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )
-                            ),
-                            Positioned(
-                              left: MediaQuery.of(context).size.width / 25,
-                              child: SizedBox(
-                                width: 65,
-                                height: 55,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black)
+                                          )
+                                        ],
+                                      )
                                   ),
-                                  child: Center(
-                                    child: Text("hp: " + _hero.hp.toString(),
-                                      style: const TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 14
-                                      ),
+                                  Positioned(
+                                    left: MediaQuery.of(context).size.width / 25,
+                                    child: SizedBox(
+                                        width: 65,
+                                        height: 55,
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.black)
+                                            ),
+                                            child: Center(
+                                              child: Text("hp: " + _hero.hp.toString(),
+                                                style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 14
+                                                ),
+                                              ),
+                                            )
+                                        )
                                     ),
-                                  )
-                                )
+                                  ),
+                                  Positioned(
+                                    left: MediaQuery.of(context).size.width / 25,
+                                    bottom: 0,
+                                    child: SizedBox(
+                                        width: 65,
+                                        height: 55,
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.black)
+                                            ),
+                                            child: Center(
+                                              child: Text("xp: " + _hero.exp.toString(),
+                                                style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 14
+                                                ),
+                                              ),
+                                            )
+                                        )
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: MediaQuery.of(context).size.width / 25,
+                                    child: SizedBox(
+                                        width: 65,
+                                        height: 55,
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.black)
+                                            ),
+                                            child: Center(
+                                              child: Text("lvl: " + _hero.level.toString(),
+                                                style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 14
+                                                ),
+                                              ),
+                                            )
+                                        )
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: MediaQuery.of(context).size.width / 25,
+                                    bottom: 0,
+                                    child: SizedBox(
+                                        width: 65,
+                                        height: 55,
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.black)
+                                            ),
+                                            child: Center(
+                                              child: Text(_hero.weapon.type,
+                                                style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 14
+                                                ),
+                                              ),
+                                            )
+                                        )
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Positioned(
-                              left: MediaQuery.of(context).size.width / 25,
-                              bottom: 0,
-                              child: SizedBox(
-                                  width: 65,
-                                  height: 55,
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(color: Colors.black)
-                                      ),
-                                      child: Center(
-                                        child: Text("xp: " + _hero.exp.toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 14
-                                          ),
-                                        ),
-                                      )
-                                  )
-                              ),
-                            ),
-                            Positioned(
-                              right: MediaQuery.of(context).size.width / 25,
-                              child: SizedBox(
-                                  width: 65,
-                                  height: 55,
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(color: Colors.black)
-                                      ),
-                                      child: Center(
-                                        child: Text("lvl: " + _hero.level.toString(),
-                                          style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 14
-                                          ),
-                                        ),
-                                      )
-                                  )
-                              ),
-                            ),
-                          ],
-                        ),
+                          )
                       ),
                     )
                 ),
-              )
-          )
-        ],
-      ),
+              ],
+            ),
+            SlidingUpPanel(
+              header: Padding(
+                padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width / 2.2, 0, 0, 0),
+                child: const Text("inventory",
+                  style: TextStyle(
+                      fontSize: 15
+                  ),
+                ),
+              ),
+              slideDirection: SlideDirection.UP,
+              minHeight: 20,
+              maxHeight: MediaQuery.of(context).size.height,
+              panel: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    if(_hero.inventory.isNotEmpty) ...[
+                      for(int i = 0; i < _hero.inventory.length; i++)
+                        getItem(i)
+                    ] else ...[
+                      const Center(
+                        child: Text("Inventory is empty",
+                          style: TextStyle(
+                              fontSize: 22
+                          ),
+                        ),
+                      )
+                    ]
+                  ],
+                ),
+              ),
+            )
+          ],
+        )
     );
   }
 }
