@@ -339,7 +339,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for (int i = 0; i < room.interior.length; i++){
       for (int j = 0; j < room.interior[i].length; j++) {
         if (room.interior[i][j] is Char) {
-          room.search(posYPl,posXPl, i, j);
+          room.search(posYPl,posXPl, i, j, _hero);
         }
       }
     }
