@@ -1,14 +1,14 @@
 class Bobject {
-  double x;
-  double y;
+  dynamic x;
+  dynamic y;
 
   Bobject(this.x, this.y);
 
-  double GetX() {
+  dynamic GetX() {
     return x;
   }
 
-  double GetY(){
+  dynamic GetY(){
     return y;
   }
 }

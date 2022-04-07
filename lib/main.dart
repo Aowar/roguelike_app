@@ -20,6 +20,9 @@ var upperExit = RectGetter.createGlobalKey();
 var lowerExit = RectGetter.createGlobalKey();
 var rightExit = RectGetter.createGlobalKey();
 var leftExit = RectGetter.createGlobalKey();
+var chestKey = RectGetter.createGlobalKey();
+var chestPos;
+
 bool flag = false;
 dynamic enemyKey;
 List<dynamic> enemyKeys = [];
@@ -66,7 +69,7 @@ class _MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
-    room = Room(1, _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
     _hero = player.Hero(Weapon(2, "sword"), Armour(2), 1, _playerHeight, _playerWidth);
     return const MyHomePage(title: "fds");
   }
@@ -100,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
     posKeys.add(RectGetter.getRectFromKey(rightUpperWallPozKey)!);
     posKeys.add(RectGetter.getRectFromKey(rightLowerWallPozKey)!);
     exitPos.add(RectGetter.getRectFromKey(upperExit));
-    exitPos.add(RectGetter.getRectFromKey(leftExit));
+    exitPos.add(RectGetter.getRectFromKey(rightExit));
     exitPos.add(RectGetter.getRectFromKey(lowerExit));
     exitPos.add(RectGetter.getRectFromKey(leftExit));
   }
@@ -121,6 +124,10 @@ class _MyHomePageState extends State<MyHomePage> {
         enemyPos.add(RectGetter.getRectFromKey(wallsKeys[i]));
       }
     }
+  }
+
+  getChestCoordinates() {
+        chestPos = RectGetter.getRectFromKey(chestKey);
   }
 
   generateWall(BuildContext context, double height, double width, var key, Color color) {
@@ -148,6 +155,9 @@ class _MyHomePageState extends State<MyHomePage> {
     getCoordinates();
     getEnemyCoordinates();
     getWallCoordinates();
+    if (room.type == 4) {
+      getChestCoordinates();
+    }
   }
 
   getNextLevel(Rect position, int direction) {
@@ -187,6 +197,12 @@ class _MyHomePageState extends State<MyHomePage> {
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY - _stepY;
         posYPl > 0 ? posYPl-- : posYPl = posYPl;
+        if (room.type == 4 && chestPos != null) {
+          if (nextPos.overlaps(chestPos)){
+            room.interior[posXPl][posYPl].OpenChest(_hero);
+            room.interior[posXPl][posYPl] = 0;
+          }
+        }
       }
       getNextLevel(nextPos, 1);
       enemyMovement();
@@ -202,6 +218,12 @@ class _MyHomePageState extends State<MyHomePage> {
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY + _stepY;
         posYPl < room.interior.length ? posYPl++ : posYPl = posYPl;
+        if (room.type == 4 && chestPos != null) {
+          if (nextPos.overlaps(chestPos)){
+            room.interior[posXPl][posYPl].OpenChest(_hero);
+            room.interior[posXPl][posYPl] = 0;
+          }
+        }
       }
       enemyMovement();
       getNextLevel(nextPos, 3);
@@ -217,6 +239,12 @@ class _MyHomePageState extends State<MyHomePage> {
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX - _stepX;
         posXPl > 0 ? posXPl-- : posXPl = posXPl;
+        if (room.type == 4 && chestPos != null) {
+          if (nextPos.overlaps(chestPos)){
+            room.interior[posXPl][posYPl].OpenChest(_hero);
+            room.interior[posXPl][posYPl] = 0;
+          }
+        }
       }
       enemyMovement();
       getNextLevel(nextPos, 4);
@@ -232,6 +260,12 @@ class _MyHomePageState extends State<MyHomePage> {
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX + _stepX;
         posXPl < room.interior[0].length ? posXPl++ : posXPl = posXPl;
+        if (room.type == 4 && chestPos != null) {
+          if (nextPos.overlaps(chestPos)){
+            room.interior[posXPl][posYPl].OpenChest(_hero);
+            room.interior[posXPl][posYPl] = 0;
+          }
+        }
       }
       enemyMovement();
       getNextLevel(nextPos, 2);
@@ -245,39 +279,57 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  generateAttackContainer() {
+    return Positioned(
+        top: _playerHeight,
+        left: _playerWidth,
+        child: SizedBox(
+          width: _playerWidth,
+          height: _playerHeight,
+          child: Container(
+            color: Colors.blue,
+          ),
+        )
+    );
+  }
+
   attack(int direction) {
     setState(() {
       switch (direction) {
         case 1:
-          if(_hero.weapon.GetWeaponType()=="sword") _hero.attack(posYPl - 1, posXPl, room);
-          else if(_hero.weapon.GetWeaponType()=="spear"){
+          if(_hero.weapon.GetWeaponType()=="sword") {
+            generateAttackContainer();
+            _hero.attack(posYPl - 1, posXPl, room);
+          } else if(_hero.weapon.GetWeaponType()=="spear"){
             _hero.attack(posYPl - 1, posXPl, room);
             _hero.attack(posYPl - 2, posXPl, room);
           }
           break;
         case 2:
-          if(_hero.weapon.GetWeaponType()=="sword") _hero.attack(posYPl, posXPl + 1, room);
-          else if(_hero.weapon.GetWeaponType()=="spear"){
+          if(_hero.weapon.GetWeaponType()=="sword") {
+            _hero.attack(posYPl, posXPl + 1, room);
+          } else if(_hero.weapon.GetWeaponType()=="spear"){
             _hero.attack(posYPl, posXPl + 1, room);
             _hero.attack(posYPl, posXPl + 2, room);
           }
           break;
         case 3:
-          if(_hero.weapon.GetWeaponType()=="sword") _hero.attack(posYPl + 1, posXPl, room);
-          else if(_hero.weapon.GetWeaponType()=="spear"){
+          if(_hero.weapon.GetWeaponType()=="sword") {
+            _hero.attack(posYPl + 1, posXPl, room);
+          } else if(_hero.weapon.GetWeaponType()=="spear"){
            _hero.attack(posYPl + 1, posXPl, room);
            _hero.attack(posYPl + 2, posXPl, room);
           }
           break;
         case 4:
-          if(_hero.weapon.GetWeaponType()=="sword") _hero.attack(posYPl, posXPl - 1, room);
-          else if(_hero.weapon.GetWeaponType()=="spear"){
+          if(_hero.weapon.GetWeaponType()=="sword") {
+            _hero.attack(posYPl, posXPl - 1, room);
+          } else if(_hero.weapon.GetWeaponType()=="spear"){
             _hero.attack(posYPl, posXPl - 1, room);
             _hero.attack(posYPl, posXPl - 2, room);
           }
           break;
       }
-      dev.log(_hero.exp.toString(), name: "Hero xp");
       enemyMovement();
     });
     enemyKeys.clear();
@@ -324,6 +376,21 @@ class _MyHomePageState extends State<MyHomePage> {
     wallsKeys.add(_wallKey);
     return rectGetter;
   }
+
+  getChest() {
+    var rectGetter = RectGetter(
+        key: chestKey,
+        child: SizedBox(
+          width: _playerWidth,
+          height: _playerHeight,
+          child: Container(
+            color: Colors.amber,
+          ),
+        )
+    );
+    return rectGetter;
+  }
+
   double horizontalWallsLength = _playerWidth*8;
   double verticalWallsLength = _playerHeight*8;
   late Timer _timer;
@@ -408,7 +475,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 child: SizedBox(
                                   width: _playerWidth,
                                   height: _playerHeight,
-                                  child: room.interior[i][j] is Char ? getEnemy() : (room.interior[i][j] == 0 ? Container() : (room.interior[i][j] == 1 ? getWall() : Container(color: Colors.amber))),
+                                  child: room.interior[i][j] is Char ? getEnemy() : (room.interior[i][j] == 0 ? Container() : (room.interior[i][j] == 1 ? getWall() : getChest())),
                                 )
                             ),
                         // getEnemyKeysLog(),
