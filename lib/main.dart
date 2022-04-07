@@ -398,7 +398,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   double horizontalWallsLength = _playerWidth*8;
   double verticalWallsLength = _playerHeight*8;
-  late Timer _timer;
 
   @override
   Widget build(BuildContext context) {

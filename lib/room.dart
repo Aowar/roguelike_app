@@ -51,7 +51,7 @@ class Room{
       //   interior[wight % 2][height % 2] = 5;
       // }
       if(type == 4){
-        interior[wight % 2][height % 2] = new Chest(wight % 2, height % 2);
+        interior[wight ~/ 2][height ~/ 2] = Chest(wight / 2, height / 2);
       }
       else {
         int k = 3;
