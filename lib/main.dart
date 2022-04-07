@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import "dart:io";
 import 'package:roguelike_app/armor.dart';
 import 'package:roguelike_app/libs.dart';
 import 'package:roguelike_app/weapon.dart';
@@ -44,8 +44,19 @@ int posYPl=0;
 int posXPl=0;
 bool attackFlag = false;
 late player.Hero _hero;
+late int _maxKills;
 
-void main() {
+void main() async {
+  // File config = File('/kills.txt');
+  // bool key = await config.exists();
+  // if(key){
+  //   String myFileContent = config.readAsStringSync();
+  //   _maxKills = int.parse(myFileContent);
+  // } else{
+  //   File('kills.txt').create();
+  //   _maxKills = 0;
+  // }
+  // print(_maxKills);
   runApp(const MyApp());
 }
 
@@ -181,6 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
           break;
       }
       room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+      if(enemyPos.length==0)_hero.hp=_hero.maxhp;
       enemyKeys.clear();
       enemyPos.clear();
       wallsKeys.clear();
@@ -347,13 +359,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   enemyMovement() {
+    int sas = 0;
     for (int i = 0; i < room.interior.length; i++){
-      for (int j = 0; j < room.interior[i].length; j++) {
+
+      for (int j = 0; j < room.interior[0].length; j++) {
         if (room.interior[i][j] is Char) {
           room.search(posYPl,posXPl, i, j, _hero);
+          print(sas);
         }
       }
+      // print(room.interior[i]);
     }
+    print("\n");
+    // print("\n");
   }
 
   getEnemy() {

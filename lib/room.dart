@@ -42,14 +42,6 @@ class Room{
       for (int i = 0; i < wight; i++) {
         interior.add(List.filled(height, 0));
       }
-
-
-      // else if (type == 3) {
-      //   interior[wight % 2][height % 2] = new Char(level, atk, def, hp, x, y);
-      // }
-      // else if (type == 1) {
-      //   interior[wight % 2][height % 2] = 5;
-      // }
       if(type == 4){
         interior[wight ~/ 2][height ~/ 2] = Chest(wight / 2, height / 2);
       }
@@ -123,12 +115,12 @@ class Room{
     if ((iP - iM).abs()+(jP - jM).abs()<2) { //пора атаковать если в растоянии 2 блуков враг
       interior[iM][jM].Hit(hero);
       // attack();
-    } else if((iM - iP).abs()<5 && (jM - jP).abs()<5){
-      if (iM-iP> 0 && interior[iM - 1][jM] == 0) { //проверка куда бвигаться, свободен ли путь и мы не на краю карты (если бахнем стенки на границе помнаты можно 3 улсловие убрать)
+    } else if((iM - iP).abs()<5 && (jM - jP).abs()<5 ){
+      if (iM-1>=0 && iM-iP> 0 && interior[iM - 1][jM] == 0 ) { //проверка куда бвигаться, свободен ли путь и мы не на краю карты (если бахнем стенки на границе помнаты можно 3 улсловие убрать)
         interior[iM - 1][jM] = interior[iM].elementAt(jM); //сдвиг
         interior[iM][jM] = 0; //обнуление
       }
-      else if (iM - iP < 0 && interior[iM + 1][jM] == 0) { //по аналогии
+      else if (iM+1<=interior.length-1 && iM - iP < 0 && interior[iM + 1][jM] == 0 ) { //по аналогии
         interior[iM + 1][jM] = interior[iM].elementAt(jM);
         interior[iM][jM] = 0;
         if ((iP - (iM + 1)).abs()+(jP - jM).abs()<2) { //пора атаковать если в растоянии 2 блуков враг
@@ -136,11 +128,11 @@ class Room{
           hero.hp += a.toInt();
         }
       }
-      else if (jM - jP > 0 && interior[iM][jM - 1] == 0) {//по аналогии
+      else if (jM-1 >=0 && jM - jP > 0 && interior[iM][jM - 1] == 0 ) {//по аналогии
         interior[iM][jM - 1] = interior[iM].elementAt(jM);
         interior[iM][jM] = 0;
       }
-      else if (jM - jP < 0 && interior[iM][jM + 1]==0) {//по аналогии
+      else if (jM+1 <=interior[0].length-1 && jM - jP < 0 && interior[iM][jM + 1]==0) {//по аналогии
         interior[iM][jM + 1] = interior[iM].elementAt(jM);
         interior[iM][jM] = 0;
         if ((iP - iM).abs()+(jP - (jM + 1)).abs()<2) { //пора атаковать если в растоянии 2 блуков враг

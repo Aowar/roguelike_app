@@ -11,7 +11,7 @@ class Char extends Bobject{
 
   Char(this.level, x, y) : super(x, y) {
     atk = level * 8;
-    maxhp = level * 50;
+    maxhp = level * 20;
     hp = maxhp;
     def = level * 2;
   }
@@ -54,12 +54,7 @@ class Char extends Bobject{
   }
 
   bool CheckHP(Char char) {
-    if (char.hp <= 0) {
-      return true;
-    }
-    else {
-      return false;
-    }
+    return char.hp <= 0 ? true:false;
   }
 
   void attack(int i, j, Room room) {

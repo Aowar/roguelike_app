@@ -7,17 +7,21 @@ import 'weapon.dart';
 class Hero extends Char {
   Weapon weapon;
   Armour armour;
+  int kills = 0;
   int exp = 0;
   late int expneeded;
   var inventory = [];
 
   Hero(this.weapon, this.armour, level, x, y) : super(level, x, y) {
+    maxhp = level*50;
+    hp = maxhp;
     expneeded = level * 100;
   }
 
   void Hit(Char char) {
     super.Hit(char);
     GiveXP(char);
+
   }
 
   void SetWeapon(Weapon weapon) {
@@ -51,6 +55,7 @@ class Hero extends Char {
 
   void GiveXP(Char char) {
     if(CheckHP(char)) {
+      kills++;
       exp = exp + (expneeded/20).round();
       hp += ((maxhp-hp)/2).round();
       if(hp > maxhp) {
