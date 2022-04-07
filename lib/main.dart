@@ -46,17 +46,7 @@ bool attackFlag = false;
 late player.Hero _hero;
 late int _maxKills;
 
-void main() async {
-  // File config = File('/kills.txt');
-  // bool key = await config.exists();
-  // if(key){
-  //   String myFileContent = config.readAsStringSync();
-  //   _maxKills = int.parse(myFileContent);
-  // } else{
-  //   File('kills.txt').create();
-  //   _maxKills = 0;
-  // }
-  // print(_maxKills);
+void main() {
   runApp(const MyApp());
 }
 
@@ -80,7 +70,7 @@ class _MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
-    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
     _hero = player.Hero(Weapon(2, "sword"), Armour(2), 1, _playerHeight, _playerWidth);
     return const MyHomePage(title: "fds");
   }
@@ -191,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
           posXPl += 16;
           break;
       }
-      room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+      room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
       if(enemyPos.length==0)_hero.hp=_hero.maxhp;
       enemyKeys.clear();
       enemyPos.clear();
@@ -203,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   restartLevel() {
-      room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+      room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
       enemyKeys.clear();
       enemyPos.clear();
       wallsKeys.clear();

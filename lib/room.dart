@@ -14,7 +14,7 @@ class Room{
   int mob=0;
   List<List<dynamic>> interior = [];
 
-  Room(type, int height, int wight){
+  Room(int type, height, wight, level){
     if(type<=75){
       this.type = 2; //мобы
     }
@@ -24,7 +24,7 @@ class Room{
     if(type<=100&&type>=95){
       this.type = 4;//рундук
     }
-    getInterior(height, wight);
+    getInterior(height, wight, level);
   }
 
 
@@ -34,7 +34,7 @@ class Room{
   //3 - ультракрип
   //4 - рундук (сундук для рун)
   //5 - босс
-  getInterior(int height, int wight) {
+  getInterior(int height, wight, level) {
     int mob=0;
     if (type != 0) {
       int center = height ~/ 2;
@@ -66,7 +66,7 @@ class Room{
                     break;
                   case 2:
                     if(max.nextInt(10)==9) {
-                      interior[i][j] = Char(1, i, j);
+                      interior[i][j] = Char(level, i, j);
                     }
                     break;
                 }
