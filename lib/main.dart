@@ -21,7 +21,8 @@ var lowerExit = RectGetter.createGlobalKey();
 var rightExit = RectGetter.createGlobalKey();
 var leftExit = RectGetter.createGlobalKey();
 var chestKey = RectGetter.createGlobalKey();
-var chestPos;
+late Rect chestPos;
+late Rect playerPrevPos;
 
 bool flag = false;
 dynamic enemyKey;
@@ -127,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   getChestCoordinates() {
-        chestPos = RectGetter.getRectFromKey(chestKey);
+        chestPos = RectGetter.getRectFromKey(chestKey)!;
   }
 
   generateWall(BuildContext context, double height, double width, var key, Color color) {
@@ -193,6 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
   goUpward() {
     setState(() {
       getAllCoordinates();
+      playerPrevPos = playerPoz;
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top - _stepY, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY - _stepY;
@@ -214,6 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getAllCoordinates();
     setState(() {
       getAllCoordinates();
+      playerPrevPos = playerPoz;
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right, playerPoz.bottom + _stepY);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY + _stepY;
@@ -235,6 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getAllCoordinates();
     setState(() {
       getAllCoordinates();
+      playerPrevPos = playerPoz;
       Rect nextPos = Rect.fromLTRB(playerPoz.left - _stepX, playerPoz.top, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX - _stepX;
@@ -256,6 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getAllCoordinates();
     setState(() {
       getAllCoordinates();
+      playerPrevPos = playerPoz;
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right + _stepX, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX + _stepX;
@@ -293,7 +298,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  attack(int direction) {
+  playerAttack(int direction) {
     setState(() {
       switch (direction) {
         case 1:
@@ -529,7 +534,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               child: IconButton(
                                                 icon: Icon(Icons.arrow_upward_rounded),
                                                 color: attackFlag ? Colors.red : Colors.black,
-                                                onPressed: () {attackFlag ? attack(1) : goUpward();},
+                                                onPressed: () {attackFlag ? playerAttack(1) : goUpward();},
                                               ),
                                             ),
                                             Center(
@@ -542,7 +547,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     child: IconButton(
                                                       icon: Icon(Icons.keyboard_arrow_left_rounded),
                                                       color: attackFlag ? Colors.red : Colors.black,
-                                                      onPressed: () {attackFlag ? attack(4) : goLeft();},
+                                                      onPressed: () {attackFlag ? playerAttack(4) : goLeft();},
                                                     ),
                                                   ),
                                                   SizedBox(
@@ -551,7 +556,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     child: IconButton(
                                                       icon: Icon(Icons.keyboard_arrow_right_rounded),
                                                       color: attackFlag ? Colors.red : Colors.black,
-                                                      onPressed: () {attackFlag ? attack(2) : goRight();},
+                                                      onPressed: () {attackFlag ? playerAttack(2) : goRight();},
                                                     ),
                                                   ),
                                                 ],
@@ -563,7 +568,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               child: IconButton(
                                                 icon: Icon(Icons.arrow_downward_rounded),
                                                 color: attackFlag ? Colors.red : Colors.black,
-                                                onPressed: () {attackFlag ? attack(3) : goDownward();},
+                                                onPressed: () {attackFlag ? playerAttack(3) : goDownward();},
                                               ),
                                             ),
                                           ],
@@ -574,11 +579,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 )
                             ),
                             Positioned(
-                              top: 5,
                               right: MediaQuery.of(context).size.width / 25,
                               child: SizedBox(
-                                width: 70,
-                                height: 70,
+                                width: 55,
+                                height: 55,
                                 child: IconButton(
                                   icon: Icon(Icons.arrow_downward_rounded),
                                   onPressed: prepareAttack,
@@ -587,10 +591,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             Positioned(
                               left: MediaQuery.of(context).size.width / 25,
-                              top: 5,
                               child: SizedBox(
-                                width: 70,
-                                height: 70,
+                                width: 55,
+                                height: 55,
                                 child: Container(
                                   decoration: BoxDecoration(
                                     border: Border.all(color: Colors.black)
@@ -599,7 +602,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     child: Text(_hero.hp.toString(),
                                       style: const TextStyle(
                                           color: Colors.black,
-                                          fontSize: 16
+                                          fontSize: 14
                                       ),
                                     ),
                                   )
