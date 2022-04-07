@@ -21,8 +21,7 @@ var lowerExit = RectGetter.createGlobalKey();
 var rightExit = RectGetter.createGlobalKey();
 var leftExit = RectGetter.createGlobalKey();
 var chestKey = RectGetter.createGlobalKey();
-late Rect chestPos;
-late Rect playerPrevPos;
+late Rect? chestPos;
 
 bool flag = false;
 dynamic enemyKey;
@@ -70,7 +69,7 @@ class _MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
-    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+    room = Room(100, _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
     _hero = player.Hero(Weapon(2, "sword"), Armour(2), 1, _playerHeight, _playerWidth);
     return const MyHomePage(title: "fds");
   }
@@ -128,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   getChestCoordinates() {
-        chestPos = RectGetter.getRectFromKey(chestKey)!;
+        chestPos = RectGetter.getRectFromKey(chestKey);
   }
 
   generateWall(BuildContext context, double height, double width, var key, Color color) {
@@ -194,13 +193,12 @@ class _MyHomePageState extends State<MyHomePage> {
   goUpward() {
     setState(() {
       getAllCoordinates();
-      playerPrevPos = playerPoz;
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top - _stepY, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY - _stepY;
         posYPl > 0 ? posYPl-- : posYPl = posYPl;
         if (room.type == 4 && chestPos != null) {
-          if (nextPos.overlaps(chestPos)){
+          if (nextPos.overlaps(chestPos!)){
             room.interior[posXPl][posYPl].OpenChest(_hero);
             room.interior[posXPl][posYPl] = 0;
           }
@@ -216,13 +214,12 @@ class _MyHomePageState extends State<MyHomePage> {
     getAllCoordinates();
     setState(() {
       getAllCoordinates();
-      playerPrevPos = playerPoz;
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right, playerPoz.bottom + _stepY);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posY = posY + _stepY;
         posYPl < room.interior.length ? posYPl++ : posYPl = posYPl;
         if (room.type == 4 && chestPos != null) {
-          if (nextPos.overlaps(chestPos)){
+          if (nextPos.overlaps(chestPos!)){
             room.interior[posXPl][posYPl].OpenChest(_hero);
             room.interior[posXPl][posYPl] = 0;
           }
@@ -238,13 +235,12 @@ class _MyHomePageState extends State<MyHomePage> {
     getAllCoordinates();
     setState(() {
       getAllCoordinates();
-      playerPrevPos = playerPoz;
       Rect nextPos = Rect.fromLTRB(playerPoz.left - _stepX, playerPoz.top, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX - _stepX;
         posXPl > 0 ? posXPl-- : posXPl = posXPl;
         if (room.type == 4 && chestPos != null) {
-          if (nextPos.overlaps(chestPos)){
+          if (nextPos.overlaps(chestPos!)){
             room.interior[posXPl][posYPl].OpenChest(_hero);
             room.interior[posXPl][posYPl] = 0;
           }
@@ -260,13 +256,12 @@ class _MyHomePageState extends State<MyHomePage> {
     getAllCoordinates();
     setState(() {
       getAllCoordinates();
-      playerPrevPos = playerPoz;
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right + _stepX, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
         posX = posX + _stepX;
         posXPl < room.interior[0].length ? posXPl++ : posXPl = posXPl;
         if (room.type == 4 && chestPos != null) {
-          if (nextPos.overlaps(chestPos)){
+          if (nextPos.overlaps(chestPos!)){
             room.interior[posXPl][posYPl].OpenChest(_hero);
             room.interior[posXPl][posYPl] = 0;
           }
