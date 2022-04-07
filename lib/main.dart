@@ -75,7 +75,7 @@ class _MyHomePage extends StatelessWidget {
     _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
     _hero = player.Hero(Weapon(2, "sword"), Armour(2), 1, _playerHeight, _playerWidth);
-    room = Room(100, _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
+    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
     return const MyHomePage(title: "fds");
   }
 }
