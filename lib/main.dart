@@ -579,7 +579,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       width: MediaQuery.of(context).size.width,
                                       child: Center(
                                         child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
                                             SizedBox(
                                               width: 50,
@@ -592,7 +592,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             ),
                                             Center(
                                               child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                                 children: [
                                                   SizedBox(
                                                     width: 50,
@@ -601,6 +601,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       icon: const Icon(Icons.keyboard_arrow_left_rounded),
                                                       color: attackFlag ? Colors.red : Colors.black,
                                                       onPressed: () {attackFlag ? playerAttack(4) : goLeft();},
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 50,
+                                                    height: 50,
+                                                    child: IconButton(
+                                                      icon: const Icon(Icons.local_fire_department),
+                                                      color: attackFlag ? Colors.red : Colors.black,
+                                                      onPressed: prepareAttack,
                                                     ),
                                                   ),
                                                   SizedBox(
@@ -632,20 +641,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 )
                             ),
                             Positioned(
-                              right: MediaQuery.of(context).size.width / 25,
-                              child: SizedBox(
-                                width: 55,
-                                height: 55,
-                                child: IconButton(
-                                  icon: const Icon(Icons.arrow_downward_rounded),
-                                  onPressed: prepareAttack,
-                                ),
-                              ),
-                            ),
-                            Positioned(
                               left: MediaQuery.of(context).size.width / 25,
                               child: SizedBox(
-                                width: 55,
+                                width: 65,
                                 height: 55,
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -661,7 +659,48 @@ class _MyHomePageState extends State<MyHomePage> {
                                   )
                                 )
                               ),
-                            )
+                            ),
+                            Positioned(
+                              left: MediaQuery.of(context).size.width / 25,
+                              bottom: 0,
+                              child: SizedBox(
+                                  width: 65,
+                                  height: 55,
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.black)
+                                      ),
+                                      child: Center(
+                                        child: Text("xp: " + _hero.exp.toString(),
+                                          style: const TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14
+                                          ),
+                                        ),
+                                      )
+                                  )
+                              ),
+                            ),
+                            Positioned(
+                              right: MediaQuery.of(context).size.width / 25,
+                              child: SizedBox(
+                                  width: 65,
+                                  height: 55,
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.black)
+                                      ),
+                                      child: Center(
+                                        child: Text("lvl: " + _hero.level.toString(),
+                                          style: const TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14
+                                          ),
+                                        ),
+                                      )
+                                  )
+                              ),
+                            ),
                           ],
                         ),
                       ),
