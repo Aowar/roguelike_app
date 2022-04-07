@@ -17,7 +17,7 @@ class Chest extends Bobject {
       var wtype = Random().nextInt(2);
       if (wtype == 1) {
         type = "spear";
-        item = Weapon(hero.GetLvl() + Random().nextInt(5) + 1, type);
+        item = Weapon(hero.GetLvl() + (Random().nextInt(5) + 1) ~/ 4, type);
       } else {
         item = Weapon(hero.GetLvl() + Random().nextInt(10) + 1, type);
       }

@@ -75,8 +75,8 @@ class _MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
-    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
     _hero = player.Hero(Weapon(2, "sword"), Armour(2), 1, _playerHeight, _playerWidth);
+    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
     return const MyHomePage(title: "fds");
   }
 }
@@ -186,7 +186,10 @@ class _MyHomePageState extends State<MyHomePage> {
           posXPl += 16;
           break;
       }
-      room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+      if(enemyKeys.isEmpty) {
+        _hero.hp = _hero.maxhp;
+      }
+      room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
       enemyKeys.clear();
       enemyPos.clear();
       wallsKeys.clear();
@@ -197,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   restartLevel() {
-    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
     enemyKeys.clear();
     enemyPos.clear();
     wallsKeys.clear();
@@ -449,6 +452,12 @@ class _MyHomePageState extends State<MyHomePage> {
           const Text("You died",
             style: TextStyle(
               fontSize: 22,
+              color: Colors.red,
+            ),
+          ),
+          Text("You killed: " + _hero.kills.toString(),
+            style: const TextStyle(
+              fontSize: 20,
               color: Colors.red,
             ),
           ),
