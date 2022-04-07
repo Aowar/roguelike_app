@@ -784,32 +784,43 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: EdgeInsets.fromLTRB(MediaQuery.of(context).size.width / 2.2, 0, 0, 0),
                 child: const Text("inventory",
                   style: TextStyle(
-                      fontSize: 15
+                      fontSize: 20
                   ),
                 ),
               ),
               slideDirection: SlideDirection.UP,
-              minHeight: 20,
+              minHeight: 30,
               maxHeight: MediaQuery.of(context).size.height,
-              panel: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    if(_hero.inventory.isNotEmpty) ...[
-                      for(int i = 0; i < _hero.inventory.length; i++)
-                        getItem(i)
-                    ] else ...[
-                      const Center(
-                        child: Text("Inventory is empty",
-                          style: TextStyle(
-                              fontSize: 22
+              panel: Stack(
+                children: [
+                  Positioned(
+                    top: 30,
+                    left: 30,
+                    child: Text("Player attack: " + _hero.weapon.atk.toString() + "\nPlayer defence: " + _hero.armour.def.toString(),
+                      style: const TextStyle(
+                          fontSize: 20
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      if(_hero.inventory.isNotEmpty) ...[
+                        for(int i = 0; i < _hero.inventory.length; i++)
+                          getItem(i)
+                      ] else ...[
+                        const Center(
+                          child: Text("Inventory is empty",
+                            style: TextStyle(
+                                fontSize: 22
+                            ),
                           ),
-                        ),
-                      )
-                    ]
-                  ],
-                ),
-              ),
+                        )
+                      ]
+                    ],
+                  ),
+                ],
+              )
             )
           ],
         )
