@@ -69,7 +69,7 @@ class _MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
-    room = Room(100, _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+    room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
     _hero = player.Hero(Weapon(2, "sword"), Armour(2), 1, _playerHeight, _playerWidth);
     return const MyHomePage(title: "fds");
   }
@@ -190,8 +190,22 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  restartLevel() {
+      room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
+      enemyKeys.clear();
+      enemyPos.clear();
+      wallsKeys.clear();
+      wallsPos.clear();
+      exitPos.clear();
+      posKeys.clear();
+  }
+
   goUpward() {
     setState(() {
+      if(_hero.hp <= 0)
+      {
+        playerDead();
+      }
       getAllCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top - _stepY, playerPoz.right, playerPoz.bottom);
       if (!posKeys.any((element) => nextPos.overlaps(element)) && !enemyPos.any((element) => nextPos.overlaps(element)) && !wallsPos.any((element) => nextPos.overlaps(element))) {
@@ -204,14 +218,13 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }
       }
-      getNextLevel(nextPos, 1);
       enemyMovement();
+      getNextLevel(nextPos, 1);
     });
     clearAllKeys();
   }
 
   goDownward() {
-    getAllCoordinates();
     setState(() {
       getAllCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right, playerPoz.bottom + _stepY);
@@ -232,7 +245,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   goLeft() {
-    getAllCoordinates();
     setState(() {
       getAllCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left - _stepX, playerPoz.top, playerPoz.right, playerPoz.bottom);
@@ -253,7 +265,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   goRight() {
-    getAllCoordinates();
     setState(() {
       getAllCoordinates();
       Rect nextPos = Rect.fromLTRB(playerPoz.left, playerPoz.top, playerPoz.right + _stepX, playerPoz.bottom);
@@ -267,8 +278,8 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         }
       }
-      enemyMovement();
       getNextLevel(nextPos, 2);
+      enemyMovement();
     });
     clearAllKeys();
   }
@@ -391,12 +402,60 @@ class _MyHomePageState extends State<MyHomePage> {
     return rectGetter;
   }
 
+  playerDead() {
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          const Text("You died",
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.red,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Press ",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.red,
+                ),
+              ),
+              IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _hero = _hero = player.Hero(Weapon(2, "sword"), Armour(2), 1, _playerHeight, _playerWidth);
+                      restartLevel();
+                      posX = _playerWidth;
+                      posY = _playerHeight;
+                      posXPl = 0;
+                      posYPl = 0;
+                    });
+                  },
+                  icon: const Icon(Icons.refresh_sharp)
+              ),
+              const Text(" to restart",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   double horizontalWallsLength = _playerWidth*8;
   double verticalWallsLength = _playerHeight*8;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _hero.hp <= 0 ? playerDead() : Scaffold(
       body: Column(
         children: [
           SizedBox(
@@ -505,7 +564,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Center(
               child: Padding(
-                padding: EdgeInsets.only(top: 20),
+                padding: const EdgeInsets.only(top: 20),
                 child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Padding(
@@ -526,7 +585,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               width: 50,
                                               height: 50,
                                               child: IconButton(
-                                                icon: Icon(Icons.arrow_upward_rounded),
+                                                icon: const Icon(Icons.arrow_upward_rounded),
                                                 color: attackFlag ? Colors.red : Colors.black,
                                                 onPressed: () {attackFlag ? playerAttack(1) : goUpward();},
                                               ),
@@ -539,7 +598,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     width: 50,
                                                     height: 50,
                                                     child: IconButton(
-                                                      icon: Icon(Icons.keyboard_arrow_left_rounded),
+                                                      icon: const Icon(Icons.keyboard_arrow_left_rounded),
                                                       color: attackFlag ? Colors.red : Colors.black,
                                                       onPressed: () {attackFlag ? playerAttack(4) : goLeft();},
                                                     ),
@@ -548,7 +607,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     width: 50,
                                                     height: 50,
                                                     child: IconButton(
-                                                      icon: Icon(Icons.keyboard_arrow_right_rounded),
+                                                      icon: const Icon(Icons.keyboard_arrow_right_rounded),
                                                       color: attackFlag ? Colors.red : Colors.black,
                                                       onPressed: () {attackFlag ? playerAttack(2) : goRight();},
                                                     ),
@@ -560,7 +619,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               width: 50,
                                               height: 50,
                                               child: IconButton(
-                                                icon: Icon(Icons.arrow_downward_rounded),
+                                                icon: const Icon(Icons.arrow_downward_rounded),
                                                 color: attackFlag ? Colors.red : Colors.black,
                                                 onPressed: () {attackFlag ? playerAttack(3) : goDownward();},
                                               ),
@@ -578,7 +637,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 width: 55,
                                 height: 55,
                                 child: IconButton(
-                                  icon: Icon(Icons.arrow_downward_rounded),
+                                  icon: const Icon(Icons.arrow_downward_rounded),
                                   onPressed: prepareAttack,
                                 ),
                               ),
@@ -593,7 +652,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     border: Border.all(color: Colors.black)
                                   ),
                                   child: Center(
-                                    child: Text(_hero.hp.toString(),
+                                    child: Text("hp: " + _hero.hp.toString(),
                                       style: const TextStyle(
                                           color: Colors.black,
                                           fontSize: 14
