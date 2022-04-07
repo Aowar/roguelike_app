@@ -67,7 +67,7 @@ class _MyHomePage extends StatelessWidget {
     _playerWidth = (MediaQuery.of(context).size.width / 20).floorToDouble();
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
     room = Room(1, _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight);
-    _hero = player.Hero(Weapon(2), Armour(2), 1, _playerHeight, _playerWidth);
+    _hero = player.Hero(Weapon(2, "sword"), Armour(2), 1, _playerHeight, _playerWidth);
     return const MyHomePage(title: "fds");
   }
 }
@@ -249,23 +249,36 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       switch (direction) {
         case 1:
-          _hero.attack(posYPl - 1, posXPl, room);
-          _hero.attack(posYPl - 2, posXPl, room);
+          if(_hero.weapon.GetWeaponType()=="sword") _hero.attack(posYPl - 1, posXPl, room);
+          else if(_hero.weapon.GetWeaponType()=="spear"){
+            _hero.attack(posYPl - 1, posXPl, room);
+            _hero.attack(posYPl - 2, posXPl, room);
+          }
           break;
         case 2:
-          _hero.attack(posYPl, posXPl + 1, room);
-          _hero.attack(posYPl, posXPl + 2, room);
+          if(_hero.weapon.GetWeaponType()=="sword") _hero.attack(posYPl, posXPl + 1, room);
+          else if(_hero.weapon.GetWeaponType()=="spear"){
+            _hero.attack(posYPl, posXPl + 1, room);
+            _hero.attack(posYPl, posXPl + 2, room);
+          }
           break;
         case 3:
-          _hero.attack(posYPl + 1, posXPl, room);
-          _hero.attack(posYPl + 2, posXPl, room);
+          if(_hero.weapon.GetWeaponType()=="sword") _hero.attack(posYPl + 1, posXPl, room);
+          else if(_hero.weapon.GetWeaponType()=="spear"){
+           _hero.attack(posYPl + 1, posXPl, room);
+           _hero.attack(posYPl + 2, posXPl, room);
+          }
           break;
         case 4:
-          _hero.attack(posYPl, posXPl - 1, room);
-          _hero.attack(posYPl, posXPl - 2, room);
+          if(_hero.weapon.GetWeaponType()=="sword") _hero.attack(posYPl, posXPl - 1, room);
+          else if(_hero.weapon.GetWeaponType()=="spear"){
+            _hero.attack(posYPl, posXPl - 1, room);
+            _hero.attack(posYPl, posXPl - 2, room);
+          }
           break;
       }
       dev.log(_hero.exp.toString(), name: "Hero xp");
+      enemyMovement();
     });
     enemyKeys.clear();
   }
