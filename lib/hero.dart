@@ -1,3 +1,5 @@
+import 'package:audioplayers/audioplayers.dart';
+import 'package:roguelike_app/main.dart';
 import 'package:roguelike_app/room.dart';
 import 'dart:developer' as dev;
 import 'armor.dart';
@@ -56,7 +58,7 @@ class Hero extends Char {
   void GiveXP(Char char) {
     if(CheckHP(char)) {
       kills++;
-      exp = exp + (expneeded/20).round();
+      exp = exp + (expneeded/10).round();
       hp += ((maxhp-hp)/2).round();
       if(hp > maxhp) {
         hp = maxhp;

@@ -1,3 +1,4 @@
+import 'package:roguelike_app/main.dart';
 import 'package:roguelike_app/room.dart';
 
 import 'bobject.dart';
@@ -65,6 +66,7 @@ class Char extends Bobject{
         room.interior[i][j] = char;
         if (CheckHP(char)) {
           room.interior[i][j] = 0;
+          enemies--;
         }
       }
     }

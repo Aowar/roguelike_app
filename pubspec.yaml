@@ -29,6 +29,7 @@ environment:
 dependencies:
   rect_getter: ^1.1.0
   sliding_up_panel: ^2.0.0+1
+  audioplayers: ^0.20.1
   flutter:
     sdk: flutter
 
@@ -58,6 +59,19 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  assets:
+    - assets/van_darkkhom_fuck_you.png
+    - assets/billy-herrington_5e28bb54852d5.png
+    - assets/maxresdefault.jpg
+    - assets/17-178465_gachibass-gachi-gasm.png
+    - assets/spank.mp3
+    - assets/fuck-you1.mp3
+    - assets/You_like_that.mp3
+    - assets/Take_it_boy.mp3
+    - assets/That_turns_me_on.mp3
+    - assets/rip_ears.mp3
+    - assets/wooo.mp3
+    - assets/Suction.mp3
 
   # To add assets to your application, add an assets section, like this:
   # assets:

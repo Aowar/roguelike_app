@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
 import 'package:roguelike_app/armor.dart';
 import 'package:roguelike_app/libs.dart';
@@ -6,6 +7,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'hero.dart' as player;
 import 'character.dart';
 
+final audioPlayer = AudioPlayer();
 var playerPozKey = RectGetter.createGlobalKey();
 var upperLeftWallPozKey = RectGetter.createGlobalKey();
 var upperRightWallPozKey = RectGetter.createGlobalKey();
@@ -38,6 +40,7 @@ double _fullFieldWidth = _playerWidth*19;
 double _fullFieldHeight = _playerHeight*19;
 double _fieldWidth = _playerWidth*17;
 double _fieldHeight = _playerHeight*17;
+int enemies = 0;
 late Room room;
 int posYPl=0;
 int posXPl=0;
@@ -76,6 +79,9 @@ class _MyHomePage extends StatelessWidget {
     _playerHeight = (MediaQuery.of(context).size.height / 30).floorToDouble();
     _hero = player.Hero(Weapon(2, "sword"), Armour(2), 1, _playerHeight, _playerWidth);
     room = Room(Random().nextInt(101), _fieldWidth ~/ _playerWidth, _fieldHeight ~/ _playerHeight, _hero.level);
+    audioPlayer.stop();
+    final _audioCache = AudioCache(fixedPlayer: audioPlayer);
+    _audioCache.play("Suction.mp3");
     return const MyHomePage(title: "fds");
   }
 }
@@ -118,6 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for(int i = 0; i < enemyKeys.length; i++) {
       if (RectGetter.getRectFromKey(enemyKeys[i]) != null){
         enemyPos.add(RectGetter.getRectFromKey(enemyKeys[i]));
+        enemies++;
       }
     }
   }
@@ -195,6 +202,10 @@ class _MyHomePageState extends State<MyHomePage> {
       wallsPos.clear();
       exitPos.clear();
       posKeys.clear();
+      enemies = 0;
+      audioPlayer.stop();
+      final _audioCache = AudioCache(fixedPlayer: audioPlayer);
+      _audioCache.play("wooo.mp3");
     }
   }
 
@@ -206,6 +217,10 @@ class _MyHomePageState extends State<MyHomePage> {
     wallsPos.clear();
     exitPos.clear();
     posKeys.clear();
+    enemies = 0;
+    audioPlayer.stop();
+    final _audioCache = AudioCache(fixedPlayer: audioPlayer);
+    _audioCache.play("Suction.mp3");
   }
 
   goUpward() {
@@ -299,6 +314,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   playerAttack(int direction) {
+    int _enemies = enemies;
     setState(() {
       switch (direction) {
         case 1:
@@ -335,6 +351,11 @@ class _MyHomePageState extends State<MyHomePage> {
           break;
       }
       enemyMovement();
+      if (_enemies > enemies) {
+        audioPlayer.stop();
+        final _audioCache = AudioCache(fixedPlayer: audioPlayer);
+        _audioCache.play(genEnemyDeathSound());
+      }
     });
     enemyKeys.clear();
   }
@@ -349,6 +370,19 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  String genEnemyDeathSound() {
+    int _random = Random.secure().nextInt(100);
+    if (_random >= 0 && _random < 25) {
+      return "fuck-you1.mp3";
+    } else if (_random >= 25 && _random < 50) {
+      return "Take_it_boy.mp3";
+    } else if (_random >= 50 && _random < 75) {
+      return "spank.mp3";
+    } else {
+      return "You_like_that.mp3";
+    }
+  }
+
   getEnemy(int i, int j) {
     var _enemyKey = RectGetter.createGlobalKey();
     var rectGetter = RectGetter(
@@ -357,7 +391,12 @@ class _MyHomePageState extends State<MyHomePage> {
           width: _playerWidth,
           height: _playerHeight,
           child: Container(
-              color: Colors.red,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.fill,
+                  image: AssetImage("assets/van_darkkhom_fuck_you.png"),
+                ),
+              ),
               child: Center(
                 child: Text(room.interior[i][j].hp.toString(),
                     style: const TextStyle(
@@ -444,6 +483,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   playerDead() {
+    audioPlayer.stop();
+    final _audioCache = AudioCache(fixedPlayer: audioPlayer);
+    _audioCache.play("rip_ears.mp3");
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -453,6 +495,10 @@ class _MyHomePageState extends State<MyHomePage> {
               fontSize: 22,
               color: Colors.red,
             ),
+          ),
+          const Image(
+            image: AssetImage("assets/17-178465_gachibass-gachi-gasm.png"),
+            fit: BoxFit.fill,
           ),
           Text("You killed: " + _hero.kills.toString(),
             style: const TextStyle(
@@ -472,13 +518,14 @@ class _MyHomePageState extends State<MyHomePage> {
               IconButton(
                   onPressed: () {
                     setState(() {
+                      audioPlayer.stop();
                       _hero = _hero = player.Hero(Weapon(2, "sword"), Armour(2), 1, _playerHeight, _playerWidth);
                       restartLevel();
                       posX = _playerWidth;
                       posY = _playerHeight;
                       posXPl = 0;
                       posYPl = 0;
-                      attackFlag = !attackFlag;
+                      attackFlag = false;
                     });
                   },
                   icon: const Icon(Icons.refresh_sharp, color: Colors.red)
@@ -499,11 +546,30 @@ class _MyHomePageState extends State<MyHomePage> {
   double horizontalWallsLength = _playerWidth*8;
   double verticalWallsLength = _playerHeight*8;
 
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return _hero.hp <= 0 ? playerDead() : Scaffold(
         body: Stack(
           children: [
+            Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: _fullFieldWidth,
+                height: _fullFieldHeight,
+                child: Image(
+                  image: const AssetImage("assets/maxresdefault.jpg"),
+                  color: Colors.black.withOpacity(0.4),
+                  fit: BoxFit.fill,
+                  colorBlendMode: BlendMode.dstATop,
+                ),
+              ),
+            ),
             Column(
               children: [
                 SizedBox(
@@ -599,7 +665,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                           RectGetter.getRectFromKey(upperLeftWallPozKey);
                                         },
                                         child: Container(
-                                          color: Colors.green,
+                                          decoration: const BoxDecoration(
+                                            image: DecorationImage(
+                                              fit: BoxFit.fill,
+                                              image: AssetImage("assets/billy-herrington_5e28bb54852d5.png"),
+                                            ),
+                                          ),
                                         ),
                                       )
                                   ),
@@ -796,7 +867,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Positioned(
                     top: 30,
                     left: 30,
-                    child: Text("Player attack: " + _hero.weapon.atk.toString() + "\nPlayer defence: " + _hero.armour.def.toString(),
+                    child: Text("Player attack: " + _hero.atk.toString() + "\nPlayer defence: " + _hero.def.toString(),
                       style: const TextStyle(
                           fontSize: 20
                       ),

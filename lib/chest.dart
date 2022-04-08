@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:audioplayers/audioplayers.dart';
+
+import 'main.dart';
 import 'weapon.dart';
 import 'armor.dart';
 import 'bobject.dart';
@@ -11,6 +14,9 @@ class Chest extends Bobject {
   Chest(x, y) : super(x, y);
 
   void OpenChest(Hero hero) {
+    audioPlayer.stop();
+    final _audioCache = AudioCache(fixedPlayer: audioPlayer);
+    _audioCache.play("That_turns_me_on.mp3");
     int gen = Random().nextInt(2);
     String type = "sword";
     if(gen == 1) {
