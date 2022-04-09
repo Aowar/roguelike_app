@@ -15,8 +15,8 @@ class Chest extends Bobject {
 
   void OpenChest(Hero hero) {
     audioPlayer.stop();
-    final _audioCache = AudioCache(fixedPlayer: audioPlayer);
-    _audioCache.play("That_turns_me_on.mp3");
+    // final _audioCache = AudioCache(fixedPlayer: audioPlayer);
+    // _audioCache.play("That_turns_me_on.mp3");
     int gen = Random().nextInt(2);
     String type = "sword";
     if(gen == 1) {

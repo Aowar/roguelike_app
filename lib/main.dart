@@ -204,8 +204,8 @@ class _MyHomePageState extends State<MyHomePage> {
       posKeys.clear();
       enemies = 0;
       audioPlayer.stop();
-      final _audioCache = AudioCache(fixedPlayer: audioPlayer);
-      _audioCache.play("wooo.mp3");
+      // final _audioCache = AudioCache(fixedPlayer: audioPlayer);
+      // _audioCache.play("wooo.mp3");
     }
   }
 
@@ -219,8 +219,8 @@ class _MyHomePageState extends State<MyHomePage> {
     posKeys.clear();
     enemies = 0;
     audioPlayer.stop();
-    final _audioCache = AudioCache(fixedPlayer: audioPlayer);
-    _audioCache.play("Suction.mp3");
+    // final _audioCache = AudioCache(fixedPlayer: audioPlayer);
+    // _audioCache.play("Suction.mp3");
   }
 
   goUpward() {
@@ -351,11 +351,11 @@ class _MyHomePageState extends State<MyHomePage> {
           break;
       }
       enemyMovement();
-      if (_enemies > enemies) {
-        audioPlayer.stop();
-        final _audioCache = AudioCache(fixedPlayer: audioPlayer);
-        _audioCache.play(genEnemyDeathSound());
-      }
+      // if (_enemies > enemies) {
+      //   audioPlayer.stop();
+      //   final _audioCache = AudioCache(fixedPlayer: audioPlayer);
+      //   _audioCache.play(genEnemyDeathSound());
+      // }
     });
     enemyKeys.clear();
   }
@@ -391,12 +391,13 @@ class _MyHomePageState extends State<MyHomePage> {
           width: _playerWidth,
           height: _playerHeight,
           child: Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: AssetImage("assets/van_darkkhom_fuck_you.png"),
-                ),
-              ),
+            color: Colors.red,
+              // decoration: const BoxDecoration(
+              //   image: DecorationImage(
+              //     fit: BoxFit.fill,
+              //     image: AssetImage("assets/van_darkkhom_fuck_you.png"),
+              //   ),
+              // ),
               child: Center(
                 child: Text(room.interior[i][j].hp.toString(),
                     style: const TextStyle(
@@ -484,8 +485,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   playerDead() {
     audioPlayer.stop();
-    final _audioCache = AudioCache(fixedPlayer: audioPlayer);
-    _audioCache.play("rip_ears.mp3");
+    // final _audioCache = AudioCache(fixedPlayer: audioPlayer);
+    // _audioCache.play("rip_ears.mp3");
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -496,10 +497,10 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.red,
             ),
           ),
-          const Image(
-            image: AssetImage("assets/17-178465_gachibass-gachi-gasm.png"),
-            fit: BoxFit.fill,
-          ),
+          // const Image(
+          //   image: AssetImage("assets/17-178465_gachibass-gachi-gasm.png"),
+          //   fit: BoxFit.fill,
+          // ),
           Text("You killed: " + _hero.kills.toString(),
             style: const TextStyle(
               fontSize: 20,
@@ -557,19 +558,19 @@ class _MyHomePageState extends State<MyHomePage> {
     return _hero.hp <= 0 ? playerDead() : Scaffold(
         body: Stack(
           children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: SizedBox(
-                width: _fullFieldWidth,
-                height: _fullFieldHeight,
-                child: Image(
-                  image: const AssetImage("assets/maxresdefault.jpg"),
-                  color: Colors.black.withOpacity(0.4),
-                  fit: BoxFit.fill,
-                  colorBlendMode: BlendMode.dstATop,
-                ),
-              ),
-            ),
+            // Align(
+            //   alignment: Alignment.topCenter,
+            //   child: SizedBox(
+            //     width: _fullFieldWidth,
+            //     height: _fullFieldHeight,
+            //     child: Image(
+            //       image: const AssetImage("assets/maxresdefault.jpg"),
+            //       color: Colors.black.withOpacity(0.4),
+            //       fit: BoxFit.fill,
+            //       colorBlendMode: BlendMode.dstATop,
+            //     ),
+            //   ),
+            // ),
             Column(
               children: [
                 SizedBox(
@@ -665,12 +666,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                           RectGetter.getRectFromKey(upperLeftWallPozKey);
                                         },
                                         child: Container(
-                                          decoration: const BoxDecoration(
-                                            image: DecorationImage(
-                                              fit: BoxFit.fill,
-                                              image: AssetImage("assets/billy-herrington_5e28bb54852d5.png"),
-                                            ),
-                                          ),
+                                          color: Colors.green,
+                                          // decoration: const BoxDecoration(
+                                          //   image: DecorationImage(
+                                          //     fit: BoxFit.fill,
+                                          //     image: AssetImage("assets/billy-herrington_5e28bb54852d5.png"),
+                                          //   ),
+                                          // ),
                                         ),
                                       )
                                   ),
